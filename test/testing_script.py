@@ -2,7 +2,7 @@
 #
 #  @file testing_script.py
 #  @author Hung Do
-from libsortsubj import *
+from sortsubj import *
 import unittest
 # import pytest
 
