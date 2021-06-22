@@ -8,3 +8,4 @@
 from .student import *
 from .subject import *
 from .sort_subjs import *
+from .day import *
