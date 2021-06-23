@@ -25,11 +25,7 @@ class SubSort:
         #  Studenti by meli byt znovu roztrizeni 
         self.__day_or_subj_updated = False
         ## Pocet studentu s vybranym 
-        self.__nof_sorted_students = 0
-
-    @property
-    def nof_sorted_students(self):
-        return self.__nof_sorted_students
+        self.nof_sorted_students = 0
 
     ## Funkce pridava noveho studenta do seznamu studentu
     #
@@ -56,6 +52,18 @@ class SubSort:
         vrati false. Jinak nastavi obsah na None a vrati true.
         """
         return False
+    
+    ## Funkce vybere kombinaci predmetu podle seznamu uspesnych kombinaci
+    #
+    #  @param index     Poradi kombinace v seznamu uspesnych kombinaci
+    def student_sel_subject(self, student_id, index: int):
+        """
+        Vyhleda ve slovniku podle student_id. Pokud se student ve slovniku nenachazi,
+        funkce vyhodi vyjimku.
+        Vola se funkce student.set_sel_subj()
+            -> pokud je output true -> nof_sorted_students++
+        """
+        pass
     
     ## Funkce vytvori a prida instanci dne
     #
@@ -116,7 +124,7 @@ class SubSort:
     def load_file_student(self, path: str):
         """
         Zkontroluje, zda soubor existuje a jestli ma spravnou koncovku
-        pote nacte obsah a ulozi ho do self.__students
+        pote nacte obsah a ulozi ho do self.students
         Format souboru (misto ',' muze byt ';'):
             ID,jmeno,prijmeni,trida,s1,s2,s3
         osetrit prebytecne whitespace (prikaz trim??)
@@ -135,7 +143,7 @@ class SubSort:
     def load_file_days(self, path: str):
         """
         Zkontroluje, zda soubor existuje a jestli ma spravnou koncovku
-        pote nacte obsah a ulozi ho do self.__days
+        pote nacte obsah a ulozi ho do self.days
         Format souboru (misto ',' muze byt ';'):
             s1,s2,s3,s4...      <- dny jsou pod sebou
         
@@ -155,7 +163,7 @@ class SubSort:
     def load_file_subjects(self, path: str):
         """
         Zkontroluje, zda soubor existuje a jestli ma spravnou koncovku
-        pote nacte obsah a ulozi ho do self.__days
+        pote nacte obsah a ulozi ho do self.subject
         Format souboru (misto ',' muze byt ';'):
             s1
             s2
@@ -223,7 +231,7 @@ class SubSort:
             print(student.pass_subj)    # [('s1', 's4', None), (None, 's4', 's1')]
 
         Pokud ma student jen jednu moznou kombinaci, je mu automaticky prirazena.
-            -> aktualizace self.__nof_sorted_students podle vystupu funkce
+            -> aktualizace self.nof_sorted_students podle vystupu funkce
 
         Doporucuju si napsat nejake pomocne funkce
             -> pokud budou v teto tride -> nazev zacina dvema podtrzitky; pr.: __moje_funkce(self)
