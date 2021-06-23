@@ -36,6 +36,10 @@ class Student:
     def sel_subj(self):
         return self.__sel_subj
     
+    @property
+    def subjects(self):
+        return self.subjects
+
     @subjects.setter
     def subjects(self, value):
         self.sorted = False
