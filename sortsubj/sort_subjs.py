@@ -6,9 +6,13 @@
 #  @version 1.0.0
 #  @copyright GNU Public License v3.0
 
-from .subject import Subject
-from .student import Student
-from .day import Day
+import re
+import os
+import codecs
+from sortsubj.subject import Subject
+from sortsubj.student import Student
+from sortsubj.day import Day
+from sortsubj.consts import SPRAVNA_KONCOVKA
 
 class SubSort:
 
@@ -16,16 +20,20 @@ class SubSort:
     def __init__(self):
         ## Seznam studentu
         #  Klicem seznamu je ID studenta
-        self.students: dict = {}
+        self.students: dict = dict()
         ## Seznam jednotlivych dnu
-        self.days    : list = []
+        self.days    : list = list()
         ## Mnozina predmetu
-        self.subject : set = {}
+        self.subject : set = set()
         ## Flag ukazuje, ze byl seznam dnu/predmetu byl aktualizovan
         #  Studenti by meli byt znovu roztrizeni 
         self.__day_or_subj_updated = False
         ## Pocet studentu s vybranym 
         self.nof_sorted_students = 0
+
+    # Aktualizace flagu
+    def request_update(self):
+        self.__day_or_subj_updated = False
 
     ## Funkce pridava noveho studenta do seznamu studentu
     #
@@ -39,7 +47,18 @@ class SubSort:
         Pokud ano, vrati false. Pokud ne, vytvori se nova instance studenta a prida se do slovniku
         s klicem id.
         """
-        return False
+        # Kontrola validity klice
+        if id is None:
+            raise Exception("ID zaka nemuze byt nedefinovana!")
+        # Kontrola existence studenta
+        if id in self.students:
+            return False
+        else:
+            # Vytvori novou instanci studenta na danem klici
+            # Klicem v dict je ID studenta
+            self.students[id] = Student(id, first_name, last_name, class_id, subjects)
+        
+        return True
     
     ## Funkce maze studenta ze seznamu studentu
     #
@@ -51,7 +70,13 @@ class SubSort:
         Vyhledava se podle klice (id). Pokud je obsah klice prazdny (if "key" not in 'dict'), 
         vrati false. Jinak nastavi obsah na None a vrati true.
         """
-        return False
+        # Kontrola validity klice a existence studenta
+        if id not in self.students:
+            return False
+        else:
+            # Mazani instance studenta ze seznamu spolecne s jeho klicem
+            del self.students[id]
+        return True
     
     ## Funkce vybere kombinaci predmetu podle seznamu uspesnych kombinaci
     #
@@ -63,7 +88,16 @@ class SubSort:
         Vola se funkce student.set_sel_subj()
             -> pokud je output true -> nof_sorted_students++
         """
-        pass
+        if student_id not in self.studetns:
+            raise Exception("Student jeste neni v seznamu")
+        
+        # Zjisti, zda byl student jiz prerazen
+        output = self.students[student_id].set_sel_subj(index)
+
+        if output:
+            self.nof_sorted_students += 1
+        else:
+            pass
     
     ## Funkce vytvori a prida instanci dne
     #
@@ -75,7 +109,18 @@ class SubSort:
         Pokud je (subjects == None), funkce nic neudela
         Pri uspesnem pridani dne je potreba nastavit flag.
         """
-        pass
+        # Kontrola hodnoty objektu
+        if subjects is None:
+            return
+            
+        # Ignoruje None -> nedefinovany predmet
+        subjects = list(filter(None, subjects))
+        # Kontroluje, zda jsou vsechny predmety v seznamu predmetu
+        for subject in subjects:
+            if subject not in self.subject:
+                raise Exception("Nedefinovany predmet!")
+
+        self.days.append(Day(subjects))
 
     ## Funkce odstrani instanci dne ze seznamu
     #
@@ -85,7 +130,11 @@ class SubSort:
         Pokud index neni mimo rozsah seznamu, instance objektu 'Day' je odstraneno (del).
         Pri uspesnem odstraneni dne je potreba nastavit flag.
         """
-        pass
+        # Zjisteni typu a velikosti indexu
+        if type(index) is not int or index >= len(self.days):
+            return
+        
+        del self.days[index]
 
     ## Funkce prida predmet do mnoziny predmetu
     #
@@ -95,7 +144,9 @@ class SubSort:
         Pokud predmet jiz existuje, funkce nic neprovede.
         Pri uspesnem pridani predmetu je potreba nastavit flag.
         """
-        pass
+        if subj_name not in self.subject and subj_name is not None:
+            self.subject.add(subj_name)
+            self.request_update() # zadost o aktualizaci flagu
 
     ## Funkce odstrani predmet z mnoziny predmetu
     #
@@ -105,6 +156,9 @@ class SubSort:
         Pokud predmet neexistuje, funkce nic neprovede.
         Pri uspesnem odstraneni predmetu je potreba nastavit flag.
         """
+        if subj_name in self.subject:
+            self.subject.remove(subj_name)
+            self.request_update() # zadost o aktualizaci flagu
         pass
     
     ## Funkce smaze vice studentu podle seznamu id
@@ -116,7 +170,10 @@ class SubSort:
         Smaze studenty podle seznamu id studentu. Pokud studentuv id
         na seznamu neni, je ignorovan a preskocen.
         """
-        pass
+        for id in list_id:
+            # Kontrola existence studenta v seznamu
+            if id in self.students:
+                del self.students[id]
 
     ## Funkce nacte soubor se studenty ve formatu .csv
     #
@@ -135,7 +192,32 @@ class SubSort:
             v souboru se vyskytuje student s jiz existujicim id
                 -> funkce vypise chybove hlaseni, ve kterem bude napsano na jakem radku jakeho souboru
         """
-        pass
+        # Kontrola existence souboru
+        if not os.path.isfile(path):
+            raise Exception("Soubor neexistuje!")
+        # Kontrola spravneho formatu souboru
+        elif path[-1*(len(SPRAVNA_KONCOVKA)):] != SPRAVNA_KONCOVKA:
+            raise Exception("Soubor je spatneho typu")
+
+        line_num = 0
+        # Cteni souboru v utf-8 kodovani
+        with codecs.open(path, encoding='utf-8') as f:
+            for line in f:
+                line_num += 1
+                # rozdeleni radku pomoci znaku ',' a ';'
+                # a mazani koncovky konce radku; os.linesep zajisti spravny znak napric OS
+                data = re.split(',|;', line.rstrip(os.linesep))
+                # ID studenta jiz existuje
+                if data[0] in self.students:
+                    raise Exception(f"Line {line_num}: Zak s ID={data[0]} jiz existuje!")
+                else:
+                    self.add_student(
+                        data[0].strip(),
+                        data[1].strip(),
+                        data[2].strip(),
+                        data[3].strip(),
+                        tuple(data[4-len(data):])   # student muze mit vic nez 3 predmetu vybranych
+                    )
 
     ## Funkce nacte soubor se dennimi rozlozenimi ve formatu .csv
     #
@@ -155,7 +237,25 @@ class SubSort:
         Duplikace by meli byt vyreseny (pomoci objektu 'set')
         Vytvori se nova instance 'Day' a prida se do seznamu dnu. 
         """
-        pass
+        # Kontrola existence souboru
+        if not os.path.isfile(path):
+            raise Exception("Soubor neexistuje!")
+        # Kontrola spravneho formatu souboru
+        elif path[-1*(len(SPRAVNA_KONCOVKA)):] != SPRAVNA_KONCOVKA:
+            raise Exception("Soubor je spatneho typu")
+        
+        # Cteni souboru v utf-8 kodovani
+        with codecs.open(path, encoding='utf-8') as f:
+            for line in f:
+                # rozdeleni radku pomoci znaku ',' a ';'
+                # a mazani koncovky konce radku; os.linesep zajisti spravny znak napric OS
+                data = re.split(',|;', line.rstrip(os.linesep))
+                data = set(data)
+                # validace predmetu
+                for subj in data:
+                    if subj not in self.subject:
+                        raise Exception(f'Predmet {subj} jeste neni definovany!')
+                self.add_day(data)
 
     ## Funkce nacte soubor se seznamem predmetu
     #
@@ -174,13 +274,23 @@ class SubSort:
             soubor neexistuje
             soubor je spatneho formatu/typu
         """
-        pass
+        # Kontrola existence souboru
+        if not os.path.isfile(path):
+            raise Exception("Soubor neexistuje!")
+        # Kontrola spravneho formatu souboru
+        elif path[-1*(len(SPRAVNA_KONCOVKA)):] != SPRAVNA_KONCOVKA:
+            raise Exception("Soubor je spatneho typu")
+        
+        with codecs.open(path, encoding='utf-8') as f:
+            for line in f:
+                self.add_subject(line.rstrip(os.linesep))
 
     ## Funkce kontoluje, zda je mozne sestavit vybranou kombinaci z nastavenych dnu
     #
     #  @param subjects  N-tice predmetu
     #  @param #TRUE pokud je zadana kombinace predmetu mozna sestavit
     def valid_combination(self, subjects: tuple) -> bool:
+
         return False
     
     ## Funkce prerovna studenty do danych dnu a predmetu
@@ -242,26 +352,64 @@ class SubSort:
     #
     #  a ulozi je do predem pojmenovanych souboru
     #  @param dir_path  Vytvoreni souboru do oznacene slozky
-    def generate_files(self, dir_path: str = None):
+    def generate_files(self, dir_path: str):
         """
-        Vygeneruje (minimalne) 6 souboru:
-            output_nezarazeni_zaci -> zaci splnuji vice nez jeden mozny vyber
-            output_pocet_studentu_na_seminar -> pocet studentu na predmet v jednotlivych dnech
-                -> zaci jsou pridani jen tehdy, pokud maji jen jednu moznost
-            output_uspesni_zaci  -> zaci splnujici maximalne jednu kombinaci
-            output_detailni_zaci -> vsichni zaci; u kazdeho je seznam moznych kombinaci
-            output_detailni_dny  -> u kazdeho predmetu je napsan seznam 100% studentu
-            output_zbyli_zaci    -> zaci nesplnuji ani jednu kombinaci
+        Vygeneruje (minimalne) 2 souboru:
+            output_zaci -> vsichni zaci; u kazdeho je seznam moznych kombinaci
+            output_dny  -> u kazdeho predmetu je napsan seznam 100% studentu
         
         Jmena souboru se muze nadefinovat v souboru 'consts.py'. Soubory jsou generovany do definovane slozky.
         Cesta ke slozce muze byt absolutni nebo relativni -> je potreba zjistit jeji existenci.
-        Pokud je dir_path == None, nebo slozka neexistuje, jsou soubory vytvorene ve stejne slozce, ve kterem
-        se nachazi exe/skript
+        Pokud je dir_path == None, nebo slozka neexistuje, program hodi chybu
         """
-        pass
+        # Kontrola prijateho parametru
+        if dir_path is None:
+            raise Exception("Cesta vystupni slozky nemuze byt prazdna")
+        elif not os.path.isdir(dir_path):
+            raise Exception("Slozka neexistuje!")
+
+        # Tvorba souboru output_dny.csv
+        # format souboru:
+        #   Den {cislo_dne}
+        #   {jmeno_predmetu}
+        #   {id_zaka},{jmeno_zaka},{prijmeni_zaka},{trida_zaka}
+        #   {id_zaka},{jmeno_zaka},{prijmeni_zaka},{trida_zaka}
+        #   ...
+        with open(os.path.join(dir_path, "output_dny.csv"), 'w') as f:
+            for i in range(len(self.days)):
+                # Vybrany den
+                f.write(f'Den {i}{os.linesep}')
+                for subj in self.days[i].subjects:
+                    # Vybrany predmet
+                    f.write(subj + os.linesep)
+                    for stud in subj.lof_students:
+                        # Vypis studentu v predmetu
+                        student = subj.lof_students[stud]
+                        f.write('{},{},{},{}'.format(student.id, student.first_name, student.last_name, student.class_id))
+                        f.write(os.linesep)
+
+        # Tvorba souboru output_zaci.csv
+        # format souboru:
+        #   {id_zaka},{jmeno_zaka},{prijmeni_zaka},{trida_zaka},{prvni_predmet},{druhy_predmet},...
+        #   {id_zaka},{jmeno_zaka},{prijmeni_zaka},{trida_zaka},{prvni_predmet},{druhy_predmet},...
+        #   {id_zaka},{jmeno_zaka},{prijmeni_zaka},{trida_zaka},{prvni_predmet},{druhy_predmet},...
+        #   ...
+        with open(os.path.join(dir_path, "output_zaci.csv"), "w") as f:
+            for id in self.students:
+                # Vypis zaku
+                student = subj.students[stud]
+                f.write('{},{},{},{}'.formta(student.id, student.first_name, student.last_name, student.class_id))
+                # Vypis jeho zvolenych predmtu
+                for item in student.sel_subj:
+                    f.write(f',{item}')
+                f.write(os.linesep)
 
     ## Funkce vycisti cely objekt
     #
     #  Seznam studentu, dnu a predmetu se vynuluje
-    def clear():
-        pass
+    def clear(self):
+        self.students.clear()
+        self.subject.clear()
+        self.days.clear()
+        self.__day_or_subj_updated = False
+        self.nof_sorted_students = 0

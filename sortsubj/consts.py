@@ -5,4 +5,4 @@
 #  @version 1.0.0
 #  @copyright GNU Public License v3.0
 
-pass
+SPRAVNA_KONCOVKA = '.csv'

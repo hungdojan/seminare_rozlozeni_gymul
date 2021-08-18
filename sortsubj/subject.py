@@ -12,7 +12,7 @@ class Subject:
         ## Jmeno predmetu
         self.__name = name
         ## Pocet studentu v danem predmetu
-        self.nof_students = 0
+        self.lof_students = dict()
 
     ## Jmeno predmetu
     #
@@ -20,3 +20,15 @@ class Subject:
     @property
     def name(self):
         return self.__name
+    
+    ## Funkce prida studenta do seznamu studentu
+    #
+    #  @param student Objekt studenta
+    def add_student(self, student):
+        # Pokud jiz student na seznamu je, tak se nepridava
+        if student.id not in self.lof_students:
+            self.lof_students[id] = student
+    
+    def remove_student(self, student_id):
+        if student_id in self.lof_students:
+            del self.lof_students[student_id]

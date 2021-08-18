@@ -23,7 +23,7 @@ class Student:
         ## Trida studenta
         self.class_id: str   = class_id
         ## N-tice vybranych predmetu
-        self.subjects: tuple = subjects
+        self.__subjects: tuple = subjects
         ## Seznam vyhovujicich kombinaci
         self.pass_subj: list = []
         ## Vybrana kombinace
@@ -38,12 +38,12 @@ class Student:
     
     @property
     def subjects(self):
-        return self.subjects
+        return self.__subjects
 
     @subjects.setter
     def subjects(self, value):
         self.sorted = False
-        self.subjects = value
+        self.__subjects = value
 
     ## Manualni selekce kombinace
     #

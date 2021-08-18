@@ -1,4 +1,4 @@
-from .subject import Subject
+from sortsubj.subject import Subject
 
 class Day:
     def __init__(self, subjects):
@@ -17,8 +17,28 @@ class Day:
         Pokud klic jiz existuje, funkce vyhodi vyjimku.
         Pokud typ v seznamu neni retezec, vyhodi vyjimku TypeError.
         """
-        pass
+        for subj in subjects:
+            if type(subj) is not str:
+                raise TypeError("Datovy typ klice musi byt retezec")
+            elif subj in self.subjects:
+                raise Exception("Predmet je jiz na seznamu")
+            self.subjects[subj] = Subject(subj)
     
+    # Pridava jednotlivy predmet do dne
+    def append_subject_to_day(self, subject_name):
+        if subject_name not in self.subjects:
+            self.subjects[subject_name] = Subject(subject_name)
+
+    # Odstranuje jednotlivy predmet ze dne
+    def remove_subject_to_day(self, subject_name):
+        if subject_name in self.subjects:
+            del self.subjects[subject_name]
+
+    # Vymaze seznam zaku
+    def clear_subs(self):
+        for key in self.subjects:
+            self.subjects[key].lof_students.clear()
+
     def __str__(self):
         # TODO:
         pass

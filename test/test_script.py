@@ -139,7 +139,7 @@ def test_delete_day():
     assert len(s.days[0].subjects) == 1
 
     for i in range(2):
-        s.delete_day(i)
+        s.delete_day(0)
     
     assert len(s.days) == 0
 
@@ -156,7 +156,7 @@ def test_load_file_student():
     with pytest.raises(Exception):
         s.load_file_student("my_file.csv")
 
-    s.load_file_student("input_zaci.csv")
+    s.load_file_student(os.path.join(os.path.dirname(__file__), "input_zaci.csv"))
     assert len(s.students) == 10
     student1 = s.students["1"]
     student5 = s.students["5"]
@@ -185,7 +185,7 @@ def test_load_file_subjects():
     with pytest.raises(Exception):
         s.load_file_subjects("my_file.csv")
 
-    s.load_file_subjects("input_predmety.csv")
+    s.load_file_subjects(os.path.join(os.path.dirname(__file__),"input_predmety.csv"))
     assert len(s.subject) == 14
     assert "ZSV" in s.subject
     assert "M-VŠ" in s.subject
@@ -194,7 +194,7 @@ def test_load_file_subjects():
 
 def test_load_day_file():
     s: SubSort = SubSort()
-    s.load_file_subjects("input_predmety.csv")
+    s.load_file_subjects(os.path.join(os.path.dirname(__file__),"input_predmety.csv"))
     # prazdna cesta
     with pytest.raises(Exception):
         s.load_file_days(None)
@@ -205,27 +205,27 @@ def test_load_day_file():
     with pytest.raises(Exception):
         s.load_file_days("my_file.csv")
 
-    s.load_file_days("input_dny.csv")
+    s.load_file_days(os.path.join(os.path.dirname(__file__),"input_dny.csv"))
     assert len(s.days) == 3
-    assert "ZSV" in s.days[2]
-    assert "ZSV" in s.days[1]
-    assert not "ZSV" in s.days[0]
-    for subs in s.days:
-        assert len(subs) == 6
+    assert "ZSV" in s.days[2].subjects
+    assert "ZSV" in s.days[1].subjects
+    assert not "ZSV" in s.days[0].subjects
+    for days in s.days:
+            assert len(days.subjects) == 6
 
-    assert "Pr" in s.days[2]
-    assert "Fy" in s.days[1]
-    assert "Aj-Konv" in s.days[0]
+    assert "Pr" in s.days[2].subjects
+    assert "Fy" in s.days[1].subjects
+    assert "Aj-Konv" in s.days[0].subjects
 
 def test_generate_files():
     s: SubSort = SubSort()
-    s.generate_files()
+    s.generate_files(os.path.dirname(__file__))
     counter = 0
-    for file in os.listdir(os.getcwd()):
-        if os.path.isfile(file) and file.startswith("output"):
+    for file in os.listdir(os.path.dirname(__file__)):
+        if file.startswith("output"):
             counter += 1
     
-    assert counter >= 6
+    assert counter >= 2
 
 @pytest.fixture()
 def setup_manual():
