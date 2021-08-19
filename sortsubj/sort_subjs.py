@@ -118,6 +118,29 @@ class SubSort:
                 self.students_per_subject[i].add(id)
         return True
     
+    ## Funkce meni studentuv vyber predmetu
+    #
+    #  @param id ID studenta
+    #  @param new_subjects Novy vyber predmetu
+    def student_change_subjects(self, id, new_subjects):
+        # Pri zmene vyberu predmetu se aktualizuje pocet studentu v jednotlivych predmetu
+        # nejprve se maze stara kombinace
+        if self.students[id].subjects is not None:
+            for sub in self.students[id].subjects:
+                if sub in self.students_per_subject:
+                    self.students_per_subject[sub].remove(id)
+        
+        # prirazeni nove kombinace studentovi
+        self.students[id].subjects = new_subjects
+
+        # pridani studenta do vybranych predmetu
+        if self.students[id].subjects is not None:
+            for sub in self.students[id].subjects:
+                if sub not in self.students_per_subject:
+                    self.students_per_subject[sub] = set()
+                self.students_per_subject[sub].add(id)
+            
+    
     ## Funkce maze studenta ze seznamu studentu
     #
     #  Vyhledava se podle ID studenta
