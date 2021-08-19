@@ -217,16 +217,6 @@ def test_load_day_file():
     assert "Fy" in s.days[1].subjects
     assert "Aj-Konv" in s.days[0].subjects
 
-def test_generate_files():
-    s: SubSort = SubSort()
-    s.generate_files(os.path.dirname(__file__))
-    counter = 0
-    for file in os.listdir(os.path.dirname(__file__)):
-        if file.startswith("output"):
-            counter += 1
-    
-    assert counter >= 2
-
 @pytest.fixture()
 def setup_manual():
     s = SubSort()
@@ -250,6 +240,21 @@ def setup_manual():
     s.students[3].subjects = tuple(["s3", "s2", "s1"])
     s.students[4].subjects = tuple(["s5", "s3", "s4"])
     yield s
+
+def test_generate_files(setup_manual):
+    s: SubSort = setup_manual
+    s.generate_files(os.path.dirname(__file__))
+    counter = 0
+    lof_files = os.listdir(os.path.dirname(__file__))
+    for file in lof_files:
+        if file.startswith("output"):
+            counter += 1
+    
+    assert counter >= 2
+
+    for file in range(len(lof_files)-1, -1, -1):
+        if lof_files[file].startswith("output"):
+            os.remove(os.path.join(os.path.dirname(__file__), lof_files[file]))
 
 def test_clear(setup_manual):
     s: SubSort = setup_manual

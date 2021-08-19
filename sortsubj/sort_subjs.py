@@ -25,6 +25,7 @@ class SubSort:
         self.days    : list = list()
         ## Mnozina predmetu
         self.subject : set = set()
+        self.students_per_subject = dict()
         ## Flag ukazuje, jestli byla aktualizace dnu zaznamenana
         #  Studenti by meli byt znovu roztrizeni 
         self.__day_up_to_dated = True
@@ -45,7 +46,16 @@ class SubSort:
         my_list = list(comb)
         my_list.sort()
         return KEY_DELIM.join(my_list)
-
+    
+    ## Funkce vraci pocet zaku, ktery navstevuje dany predmet
+    #
+    #  @param subj_name Jmeno predmetu
+    #  @return Pocet zaku v danem predmetu; #NONE pokud predmet neexistuje
+    def get_nof_students_in_subject(self, subj_name):
+        if subj_name in self.students_per_subject:
+            return len(self.students_per_subject[subj_name])
+        return None
+    
     ## Funkce nove roztridi dny do hashmapy kombinaci
     def __update_combinations(self):
         # nacte seznam predmetu za kazdy den
@@ -100,7 +110,12 @@ class SubSort:
             # Vytvori novou instanci studenta na danem klici
             # Klicem v dict je ID studenta
             self.students[id] = Student(id, first_name, last_name, class_id, subjects)
-        
+        # Aktualizace pocitadla predmetu
+        if self.students[id].subjects is not None:
+            for i in subjects:
+                if i not in self.students_per_subject:
+                    self.students_per_subject[i] = set()
+                self.students_per_subject[i].add(id)
         return True
     
     ## Funkce maze studenta ze seznamu studentu
@@ -117,6 +132,12 @@ class SubSort:
         if id not in self.students:
             return False
         else:
+            # Aktualizace pocitadla studentu
+            if self.students[id].subjects is not None:
+                for i in self.students[id].subjects:
+                    if i in self.students_per_subject:
+                        self.students_per_subject[i].remove(id)
+                
             # Mazani instance studenta ze seznamu spolecne s jeho klicem
             del self.students[id]
         return True
@@ -220,6 +241,10 @@ class SubSort:
         if subj_name not in self.subject and subj_name is not None:
             self.subject.add(subj_name)
             self.__subj_up_to_dated = False
+        
+        if subj_name is not None:
+            self.students_per_subject[subj_name] = set()
+
     ## Funkce odstrani predmet z mnoziny predmetu
     #
     #  @param subj_name Jmeno predmetu
@@ -232,6 +257,9 @@ class SubSort:
             self.subject.remove(subj_name)
             self.__subj_up_to_dated = False
     
+        if subj_name is not None and subj_name in self.students_per_subject:
+            del self.students_per_subject[subj_name]
+
     ## Funkce smaze vice studentu podle seznamu id
     #
     #  Pokud student v seznamu neni, je ignorovan
@@ -470,7 +498,6 @@ class SubSort:
                 if key not in self.__hashmap_combination:
                     self.__hashmap_custom_combination[key] = self.__get_custom_combination(self.students[id].subjects)
                 self.students[id].pass_subj = self.__hashmap_custom_combination[key]
-                
 
             # student ma jedinou moznost
             if len(self.students[id].pass_subj) == 1:
@@ -481,7 +508,6 @@ class SubSort:
         # Uprava flagu
         self.__day_up_to_dated = True
         self.__subj_up_to_dated = True
-    
 
     ## Funkce vygeneruje vysledna data
     #
