@@ -1,5 +1,6 @@
 ## Trida studenta
 #
+#  @class Student
 #  @file student.py
 #  @authors: Hung Do, Prokop Mikulasek
 #  @version 1.0.0

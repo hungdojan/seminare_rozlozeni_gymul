@@ -1,7 +1,7 @@
 ## Soubor s knihovnimi funkcemi tridici studenty do jednotlivych skupin
 #
 #  @class SubSort
-#  @file lib_sort_subjs.py
+#  @file sort_subjs.py
 #  @authors: Hung Do, Prokop Mikulasek
 #  @version 1.0.0
 #  @copyright GNU Public License v3.0

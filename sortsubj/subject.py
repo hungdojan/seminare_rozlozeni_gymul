@@ -1,5 +1,6 @@
 ## Trida predmetu
 #
+#  @class Subject
 #  @file subject.py
 #  @authors: Hung Do, Prokop Mikulasek
 #  @version 1.0.0

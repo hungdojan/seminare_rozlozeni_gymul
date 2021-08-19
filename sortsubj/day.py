@@ -1,3 +1,11 @@
+## Trida dnu
+#
+#  @class Dat
+#  @file day.py
+#  @authors: Hung Do, Prokop Mikulasek
+#  @version 1.0.0
+#  @copyright GNU Public License v3.0
+
 from sortsubj.subject import Subject
 
 class Day:
