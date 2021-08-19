@@ -244,11 +244,11 @@ def setup_manual():
     for i in range(5):
         s.add_student(i, "Student", f"{i}", "O8", None)
     
-    s.students[0].subjects = ("s1")
-    s.students[1].subjects = ("s1", "s2")
-    s.students[2].subjects = ("s1", "s4")
-    s.students[3].subjects = ("s3", "s2", "s1")
-    s.students[4].subjects = ("s5", "s3", "s4")
+    s.students[0].subjects = tuple(["s1"])
+    s.students[1].subjects = tuple(["s1", "s2"])
+    s.students[2].subjects = tuple(["s1", "s4"])
+    s.students[3].subjects = tuple(["s3", "s2", "s1"])
+    s.students[4].subjects = tuple(["s5", "s3", "s4"])
     yield s
 
 def test_clear(setup_manual):
@@ -266,7 +266,6 @@ def test_clear(setup_manual):
 
 def test_sort_data(setup_manual):
     s: SubSort = setup_manual
-
     s.sort_data()
 
     assert len(s.students[0].pass_subj) == 2
@@ -275,14 +274,14 @@ def test_sort_data(setup_manual):
     assert s.students[0].sel_subj == None
     assert s.students[0].sorted
 
-    assert len(s.students[1].pass_subj) == 2
+    assert len(s.students[1].pass_subj) == 3
     assert ("s1", "s2", None) in s.students[1].pass_subj
     assert ("s2", None, "s1") in s.students[1].pass_subj
+    assert (None, "s2", "s1") in s.students[1].pass_subj
     assert s.students[1].sel_subj == None
     assert s.students[1].sorted
 
-    assert len(s.students[2].pass_subj) == 3
-    assert ("s1", "s4", None) in s.students[2].pass_subj
+    assert len(s.students[2].pass_subj) == 2
     assert ("s1", None, "s4") in s.students[2].pass_subj
     assert (None, "s4", "s1") in s.students[2].pass_subj
     assert s.students[2].sel_subj == None

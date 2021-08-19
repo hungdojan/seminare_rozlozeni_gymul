@@ -22,13 +22,17 @@ class Subject:
         return self.__name
     
     ## Funkce prida studenta do seznamu studentu
+    #  Pokud student na seznamu je, funkce ho ignoruje
     #
     #  @param student Objekt studenta
     def add_student(self, student):
-        # Pokud jiz student na seznamu je, tak se nepridava
         if student.id not in self.lof_students:
-            self.lof_students[id] = student
+            self.lof_students[student.id] = student
     
+    ## Funkce odstrani studenta ze seznamu
+    #  Pokud student na seznamu neni, funkce ho ignoruje
+    #
+    #  @param student_id Studentuv id
     def remove_student(self, student_id):
         if student_id in self.lof_students:
             del self.lof_students[student_id]

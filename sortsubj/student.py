@@ -58,6 +58,12 @@ class Student:
         self.__sel_subj = self.pass_subj[index]
         # Nova hodnota je non-None
         return is_set and self.__sel_subj is not None
+    
+    ## Vynuluje studentovy data
+    def clear_data(self):
+        self.pass_subj.clear()
+        self.__sel_subj = None
+        self.sorted = False
 
     def __str__(self):
         # TODO:
