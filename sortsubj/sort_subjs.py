@@ -300,7 +300,8 @@ class SubSort:
     ## Funkce nacte soubor se studenty ve formatu .csv
     #
     #  @param path  Cesta k souboru
-    def load_file_student(self, path: str):
+    #  @return #TRUE pokud nacteni probehlo uspesne
+    def load_file_student(self, path: str) -> bool:
         """
             Zkontroluje, zda soubor existuje a jestli ma spravnou koncovku
             pote nacte obsah a ulozi ho do self.students
@@ -308,18 +309,21 @@ class SubSort:
                 ID,jmeno,prijmeni,trida,s1,s2,s3
             osetrit prebytecne whitespace (prikaz trim??)
 
-            Funkce vyhodi vyjimku, kdyz:
+            Funkce vrati #FALSE, kdyz:
                 soubor neexistuje
                 soubor je spatneho formatu/typu
                 v souboru se vyskytuje student s jiz existujicim id
                     -> funkce vypise chybove hlaseni, ve kterem bude napsano na jakem radku jakeho souboru
         """
+        # Kontrola parametru
+        if path is None or type(path) is not str:
+            return False
         # Kontrola existence souboru
         if not os.path.isfile(path):
-            raise Exception("Soubor neexistuje!")
+            return False
         # Kontrola spravneho formatu souboru
         elif path[-1*(len(SPRAVNA_KONCOVKA)):] != SPRAVNA_KONCOVKA:
-            raise Exception("Soubor je spatneho typu")
+            return False
 
         line_num = 0
         # Cteni souboru v utf-8 kodovani
@@ -340,18 +344,20 @@ class SubSort:
                         data[3].strip(),
                         tuple(data[4-len(data):])   # student muze mit vic nez 3 predmetu vybranych
                     )
+        return True
 
     ## Funkce nacte soubor se dennimi rozlozenimi ve formatu .csv
     #
     #  @param path  Cesta k souboru
-    def load_file_days(self, path: str):
+    #  @return #TRUE pokud nacteni probehlo uspesne
+    def load_file_days(self, path: str) -> bool:
         """
             Zkontroluje, zda soubor existuje a jestli ma spravnou koncovku
             pote nacte obsah a ulozi ho do self.days
             Format souboru (misto ',' muze byt ';'):
                 s1,s2,s3,s4...      <- dny jsou pod sebou
             
-            Funkce vyhodi vyjimku, kdyz:
+            Funkce vrati #FALSE, kdyz:
                 soubor neexistuje
                 soubor je spatneho formatu/typu
                 ve dni se nachazi predmet, ktery jeste nebyl definovan
@@ -359,12 +365,15 @@ class SubSort:
             Duplikace by meli byt vyreseny (pomoci objektu 'set')
             Vytvori se nova instance 'Day' a prida se do seznamu dnu. 
         """
+        # Kontrola parametru
+        if path is None or type(path) is not str:
+            return False
         # Kontrola existence souboru
         if not os.path.isfile(path):
-            raise Exception("Soubor neexistuje!")
+            return False
         # Kontrola spravneho formatu souboru
         elif path[-1*(len(SPRAVNA_KONCOVKA)):] != SPRAVNA_KONCOVKA:
-            raise Exception("Soubor je spatneho typu")
+            return False
         
         # Cteni souboru v utf-8 kodovani
         with codecs.open(path, encoding='utf-8') as f:
@@ -379,11 +388,13 @@ class SubSort:
                         raise Exception(f'Predmet {subj} jeste neni definovany!')
                 self.add_day(data)
         self.__subj_up_to_dated = False
+        return True
 
     ## Funkce nacte soubor se seznamem predmetu
     #
     #  @param path  Cesta k souboru
-    def load_file_subjects(self, path: str):
+    #  @return #TRUE pokud nacteni probehlo uspesne
+    def load_file_subjects(self, path: str) -> bool:
         """
             Zkontroluje, zda soubor existuje a jestli ma spravnou koncovku
             pote nacte obsah a ulozi ho do self.subject
@@ -393,21 +404,25 @@ class SubSort:
                 s3
                 ...
             
-            Funkce vyhodi vyjimku, kdyz:
+            Funkce vraci #FALSE, kdyz:
                 soubor neexistuje
                 soubor je spatneho formatu/typu
         """
+        # Kontrola parametru
+        if path is None or type(path) is not str:
+            return False
         # Kontrola existence souboru
         if not os.path.isfile(path):
-            raise Exception("Soubor neexistuje!")
+            return False
         # Kontrola spravneho formatu souboru
         elif path[-1*(len(SPRAVNA_KONCOVKA)):] != SPRAVNA_KONCOVKA:
-            raise Exception("Soubor je spatneho typu")
+            return False
         
         with codecs.open(path, encoding='utf-8') as f:
             for line in f:
                 self.add_subject(line.rstrip(EOF))
         self.request_update()
+        return True
 
     ## Funkce zjistuje, zda neuplna kombinace jde setridit
     #

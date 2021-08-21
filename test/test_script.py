@@ -147,14 +147,11 @@ def test_load_file_student():
     s: SubSort = SubSort()
 
     # prazdna cesta
-    with pytest.raises(Exception):
-        s.load_file_student(None)
+    assert not s.load_file_student(None)
     # spatny format/typ
-    with pytest.raises(Exception):
-        s.load_file_student("my_file.txt")
+    assert not s.load_file_student("my_file.txt")
     # neexistujici soubor
-    with pytest.raises(Exception):
-        s.load_file_student("my_file.csv")
+    assert not s.load_file_student("my_file.csv")
 
     s.load_file_student(os.path.join(os.path.dirname(__file__), "input_zaci.csv"))
     assert len(s.students) == 10
@@ -176,14 +173,11 @@ def test_load_file_subjects():
     s: SubSort = SubSort()
 
     # prazdna cesta
-    with pytest.raises(Exception):
-        s.load_file_subjects(None)
+    assert not s.load_file_subjects(None)
     # spatny format/typ
-    with pytest.raises(Exception):
-        s.load_file_subjects("my_file.txt")
+    assert not s.load_file_subjects("my_file.txt")
     # neexistujici soubor
-    with pytest.raises(Exception):
-        s.load_file_subjects("my_file.csv")
+    assert not s.load_file_subjects("my_file.csv")
 
     s.load_file_subjects(os.path.join(os.path.dirname(__file__),"input_predmety.csv"))
     assert len(s.subject) == 14
@@ -196,14 +190,11 @@ def test_load_day_file():
     s: SubSort = SubSort()
     s.load_file_subjects(os.path.join(os.path.dirname(__file__),"input_predmety.csv"))
     # prazdna cesta
-    with pytest.raises(Exception):
-        s.load_file_days(None)
+    assert not s.load_file_days(None)
     # spatny format/typ
-    with pytest.raises(Exception):
-        s.load_file_days("my_file.txt")
+    assert not s.load_file_days("my_file.txt")
     # neexistujici soubor
-    with pytest.raises(Exception):
-        s.load_file_days("my_file.csv")
+    assert not s.load_file_days("my_file.csv")
 
     s.load_file_days(os.path.join(os.path.dirname(__file__),"input_dny.csv"))
     assert len(s.days) == 3
