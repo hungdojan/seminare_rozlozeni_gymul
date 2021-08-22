@@ -104,7 +104,7 @@ def refresh():
                 predmet[0].rowconfigure(0, weight=1)
                 predmet[0].columnconfigure(0, weight=2)
                 predmet[0].columnconfigure(1, weight=1)
-                
+
                 predmet[1].grid(row=0, column=0)
                 predmet[2].grid(row=0, column=1)
 
@@ -124,6 +124,17 @@ def refresh():
 
     # prepocita kombinace
     ss.sort_data()
+
+    if len(virtualni_seznam_dnu) > 0 and len(ss.subject) > 0:
+        pocitadloDnu = 0
+        for den in virtualni_seznam_dnu:
+            for predmet in den[1]:
+                if predmet[3].get():
+                    # update poctu studentu
+                    predmet[2].config(text=len(ss.days[pocitadloDnu].subjects[predmet[1].cget("text")].lof_students))
+                else:
+                    predmet[2].config(text="0")
+            pocitadloDnu += 1
 
     # update status baru
     statusbar.config(text="¨Měním barvy ohraničení studentů...")
@@ -159,6 +170,8 @@ def refresh():
 
         tempPrehledovyFrame = Frame(megaFrameNaPredmety).grid(row=pocitadloRadkuVPravemSloupci, column=0, sticky='ew')
         #tempPrehledovyFrame.config(highlightbackground="#000000", highlightcolor="#000000", highlightthickness=1)
+
+        #len(ss.students_per_subject[jmeno_predmetu])
 
         pocitadloRadkuVPravemSloupci += 1
 
