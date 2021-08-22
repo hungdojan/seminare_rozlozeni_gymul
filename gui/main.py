@@ -44,7 +44,7 @@ ss = SubSort()
 #   --- MAIN        ---
 root = Tk()
 root.title("Pomocnik pro rozzarovani seminaru 1.0.0")
-root.geometry("1890x810")
+root.geometry("1920x810")
 
 #   --- FUNKCE      ---
 def refresh():
@@ -119,6 +119,9 @@ def refresh():
                 pocitadloSloupeckuVeDni += 1
             pocitadloDnu += 1
 
+    # prezkoumani studentu se zmenenymi predmety
+    # TODO:
+
     # update status baru
     statusbar.config(text="Zkoumám vhodné kombinace...")
 
@@ -161,6 +164,10 @@ def refresh():
     # update status baru
     statusbar.config(text="Aktualizuji pravy sloupec...")
 
+    # vymazani praveho sloupce
+    for child in megaFrameNaPredmety.winfo_children():
+        child.destroy()
+
     # vykresleni prehledu predmetu v pravem sloupci spolu s cislem prihlasenych zaku
     megaFrameNaPredmety.columnconfigure(0, weight=1)
     pocitadloRadkuVPravemSloupci = 0
@@ -168,10 +175,18 @@ def refresh():
 
         megaFrameNaPredmety.rowconfigure(pocitadloRadkuVPravemSloupci, weight=1)
 
-        tempPrehledovyFrame = Frame(megaFrameNaPredmety).grid(row=pocitadloRadkuVPravemSloupci, column=0, sticky='ew')
-        #tempPrehledovyFrame.config(highlightbackground="#000000", highlightcolor="#000000", highlightthickness=1)
+        tempPrehledovyFrame = Frame(megaFrameNaPredmety)
+        tempPrehledovyFrame_predmet = Label(tempPrehledovyFrame, text=predmet, width=14)
+        tempPrehledovyLabel_pocet = Label(tempPrehledovyFrame, text=len(ss.students_per_subject[predmet]), width=5)
 
-        #len(ss.students_per_subject[jmeno_predmetu])
+        tempPrehledovyFrame.rowconfigure(0, weight=1)
+        tempPrehledovyFrame.columnconfigure(0, weight=1)
+        tempPrehledovyFrame.columnconfigure(1, weight=1)
+
+        tempPrehledovyFrame.grid(row=pocitadloRadkuVPravemSloupci, column=0, sticky='w', padx=16)
+        tempPrehledovyFrame_predmet.grid(row=0, column=0, sticky='nsew')
+        tempPrehledovyLabel_pocet.grid(row=0, column=1, sticky='nsew')
+        tempPrehledovyFrame.config(highlightbackground="#000000", highlightcolor="#000000", highlightthickness=1)
 
         pocitadloRadkuVPravemSloupci += 1
 
@@ -374,12 +389,6 @@ def odeberDen():
 
         refresh()
 
-def zmenaPredmetuStudenta():
-    pass
-
-def zmenaZaskrtnutychPredmetuVeDni():
-    pass
-
 def oznamovaciOkno(jmeno, rozliseni, textHlaseni):     
     
     # Toplevel object which will
@@ -432,8 +441,8 @@ statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
 
 # generovani te zasrane mrizky
 root.columnconfigure(0, weight=1, minsize=650)      # seznam studentu
-root.columnconfigure(1, weight=1, minsize=650)      # moznost zaskrtavat predmety jednotl. dnu
-root.columnconfigure(2, weight=1, minsize=290)      # prehled predmetu s pocty studentu
+root.columnconfigure(1, weight=1, minsize=750)      # moznost zaskrtavat predmety jednotl. dnu
+root.columnconfigure(2, weight=1, minsize=300)      # prehled predmetu s pocty studentu
 
 root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
 root.rowconfigure(1, weight=10, minsize=680)        # dulezity obsah sloupcu (hodne mista)
