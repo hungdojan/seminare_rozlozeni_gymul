@@ -25,6 +25,7 @@ class SubSort:
         self.days    : list = list()
         ## Mnozina predmetu
         self.subject : set = set()
+        ## Seznam predmetu s poctem studentu
         self.students_per_subject = dict()
         ## Flag ukazuje, jestli byla aktualizace dnu zaznamenana
         #  Studenti by meli byt znovu roztrizeni 
@@ -236,6 +237,45 @@ class SubSort:
         self.days.append(Day(subjects))
         # Vynulovani data u studentu a ostatnich dnu
         self.request_update()
+
+    ## Prida jednotlivy predmet do dne
+    #
+    #  @param day_id Index dne
+    #  @param subj_name Jmeno predmetu
+    def add_subject_to_day(self, day_id: int, subj_name: str):
+        """
+            Zkontroluje, zda je index v intervalu <0; pocet_dnu-1> a 
+            zda je vybrany predmet definovan. Pote prida predmet do dne za predpokladu, 
+            ze se jeste nenachazi v seznamu predmetu ve dni.
+        """
+        if day_id not in range(len(self.days)):
+            return
+
+        if subj_name not in self.subjects:
+            return
+
+        if subj_name not in self.days[day_id].subjects:
+            self.days[day_id].subjects[subj_name] = Subject(subj_name)
+
+    ## Odebere predmet ze dne
+    #
+    #  @param day_id Index dne
+    #  @param subj_name Jmeno predmetu
+    def delete_subject_from_day(self, day_id, subj_name):
+        """
+            Zkontroluje, zda je index v intervalu <0; pocet_dnu-1> a 
+            zda je vybrany predmet definovan. Pote odebere predmet ze dne za predpokladu, 
+            ze se nachazi v seznamu predmetu ve dni.
+        """
+        if day_id not in range(len(self.days)):
+            return
+
+        if subj_name not in self.subjects:
+            return
+
+        if subj_name not in self.days[day_id].subjects:
+            del self.days[day_id].subjects[subj_name]
+
 
     ## Funkce odstrani instanci dne ze seznamu
     #
@@ -521,6 +561,9 @@ class SubSort:
             Doporucuju si napsat nejake pomocne funkce
                 -> pokud budou v teto tride -> nazev zacina dvema podtrzitky; pr.: __moje_funkce(self)
         """
+        # Aktualizace dat
+        self.request_update()
+
         for id in self.students:
             
             # student ma vybrano vice predmetu

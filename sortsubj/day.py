@@ -31,16 +31,6 @@ class Day:
             elif subj in self.subjects:
                 raise Exception("Predmet je jiz na seznamu")
             self.subjects[subj] = Subject(subj)
-    
-    # Pridava jednotlivy predmet do dne
-    def append_subject_to_day(self, subject_name):
-        if subject_name not in self.subjects:
-            self.subjects[subject_name] = Subject(subject_name)
-
-    # Odstranuje jednotlivy predmet ze dne
-    def remove_subject_to_day(self, subject_name):
-        if subject_name in self.subjects:
-            del self.subjects[subject_name]
 
     # Vymaze seznam zaku
     def clear_subs(self):
