@@ -10,6 +10,7 @@ import re
 import os
 import codecs
 import itertools
+from sortsubj.subject import Subject
 from sortsubj.student import Student
 from sortsubj.day import Day
 from sortsubj.consts import *
@@ -251,7 +252,7 @@ class SubSort:
         if day_id not in range(len(self.days)):
             return
 
-        if subj_name not in self.subjects:
+        if subj_name not in self.subject:
             return
 
         if subj_name not in self.days[day_id].subjects:
@@ -270,10 +271,10 @@ class SubSort:
         if day_id not in range(len(self.days)):
             return
 
-        if subj_name not in self.subjects:
+        if subj_name not in self.subject:
             return
 
-        if subj_name not in self.days[day_id].subjects:
+        if subj_name in self.days[day_id].subjects:
             del self.days[day_id].subjects[subj_name]
 
 
