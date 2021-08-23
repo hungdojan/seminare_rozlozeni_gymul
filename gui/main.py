@@ -43,7 +43,7 @@ ss = SubSort()
 
 #   --- MAIN        ---
 root = Tk()
-root.title("Pomocnik pro rozzarovani seminaru 1.0.0")
+root.title("Pomocnik pro rozrazovani seminaru 1.0.0")
 root.geometry("1920x810")
 
 #   --- FUNKCE      ---
