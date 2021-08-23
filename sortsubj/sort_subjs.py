@@ -129,7 +129,7 @@ class SubSort:
         # nejprve se maze stara kombinace
         if self.students[id].subjects is not None:
             for sub in self.students[id].subjects:
-                if sub in self.students_per_subject:
+                if sub in self.students_per_subject and id in self.students_per_subject[sub]:
                     self.students_per_subject[sub].remove(id)
         
         # prirazeni nove kombinace studentovi
