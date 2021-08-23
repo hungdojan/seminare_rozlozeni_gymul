@@ -120,7 +120,20 @@ def refresh():
             pocitadloDnu += 1
 
     # prezkoumani studentu se zmenenymi predmety
-    # TODO:
+    # [Frame, ID Label, Jmeno Label, Prijmeni Label, 1.sem Entry, 2.sem Entry, 3.sem Entry, poradi, trida] = student
+    for student in virtualni_seznam_plnych_ramcu:
+       
+        student_id = student[1].cget("text")
+
+        if (student[4].get() in ss.subject) and (student[5].get() in ss.subject) and (student[6].get() in ss.subject):
+            ss.student_change_subjects(student_id, [student[4].get(),student[5].get(),student[6].get()])
+
+        else:
+            zmenBarvu(int(student_id), "#3333ff")
+            statusbar.config(text="ERROR U MODRÉHO STUDENTA")
+            return
+
+
 
     # update status baru
     statusbar.config(text="Zkoumám vhodné kombinace...")
@@ -140,7 +153,7 @@ def refresh():
             pocitadloDnu += 1
 
     # update status baru
-    statusbar.config(text="¨Měním barvy ohraničení studentů...")
+    statusbar.config(text="Měním barvy ohraničení studentů...")
 
     # prochazi vsechny ramce ve virtualnim seznamu plnych ramcu
     poradnik = 0
@@ -191,7 +204,7 @@ def refresh():
         pocitadloRadkuVPravemSloupci += 1
 
     # update status baru
-    statusbar.config(text="Přepočet dokončen.")
+    statusbar.config(text="Všechny operace dokončeny, momentálně nepracuji.")
 
 def zmenBarvu(id, barva):
     global virtualni_seznam_plnych_ramcu
@@ -302,11 +315,11 @@ def nactiStudentyZeSouboru():
                 skupinka[6].grid(row=0, column=6, stick="nsew")
         poradnik += 1
 
-    # update informaci
-    refresh()
-
     # update statusbaru
     statusbar.config(text="Načítání studentů dokončeno.")
+
+    # update informaci
+    refresh()
 
 def nactiPredmetyZeSouboru():
     global statusbar
@@ -338,10 +351,10 @@ def nactiPredmetyZeSouboru():
         statusbar.config(text="Načítání předmětů zrušeno důsledkem chyby při výběru souboru.")
         return
 
-    refresh()
-
     # update status baru
     statusbar.config(text="Načítání předmětů dokončeno.")
+
+    refresh()
 
 def pridejDen():
     global virtualni_seznam_dnu
