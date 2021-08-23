@@ -132,13 +132,14 @@ class SubSort:
                 if sub in self.students_per_subject and id in self.students_per_subject[sub]:
                     self.students_per_subject[sub].remove(id)
         
-        # prirazeni nove kombinace studentovi
+        # prirazeni nove kombinace studentovi a vynuluje data studenta
         self.students[id].subjects = new_subjects
+        self.studnets[id].clear_data()
 
         # pridani studenta do vybranych predmetu
         if self.students[id].subjects is not None:
             for sub in self.students[id].subjects:
-                if sub not in self.students_per_subject:
+                if sub not in self.students_per_subject and sub in self.subject:
                     self.students_per_subject[sub] = set()
                 self.students_per_subject[sub].add(id)
             
@@ -257,6 +258,7 @@ class SubSort:
 
         if subj_name not in self.days[day_id].subjects:
             self.days[day_id].subjects[subj_name] = Subject(subj_name)
+            self.request_update()
 
     ## Odebere predmet ze dne
     #
@@ -276,6 +278,7 @@ class SubSort:
 
         if subj_name in self.days[day_id].subjects:
             del self.days[day_id].subjects[subj_name]
+            self.request_update()
 
 
     ## Funkce odstrani instanci dne ze seznamu
@@ -336,7 +339,7 @@ class SubSort:
         for id in list_id:
             # Kontrola existence studenta v seznamu
             if id in self.students:
-                del self.students[id]
+                self.delete_student(id)
 
     ## Funkce nacte soubor se studenty ve formatu .csv
     #
@@ -511,10 +514,6 @@ class SubSort:
 
     ## Funkce prerovna studenty do danych dnu a predmetu
     def sort_data(self):
-        # TODO: hlavni cast programu; je mozne ze se obsah da do vice souboru
-        # obsah teto funkce se ponecha pozdeji
-        # mel by zpracovat informace
-        # projekt kombinace a zjistit u kazdeho studenta, zda u nej vyhovyji predmety
         """
             Funkce se zklada ze 2 casti:
                 - funkce projede vsechny studenty a najde u nic uspesne kombinace
@@ -566,6 +565,10 @@ class SubSort:
         self.request_update()
 
         for id in self.students:
+            
+            # preskakuje jiz roztrizene studenty
+            if self.students[id].sorted:
+                continue
             
             # student ma vybrano vice predmetu
             if len(self.students[id].subjects) > len(self.days):

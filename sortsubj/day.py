@@ -10,6 +10,7 @@ from sortsubj.subject import Subject
 
 class Day:
     def __init__(self, subjects):
+        ## Seznam predmetu ve dni
         self.subjects: dict = {}
         self.__dict_init(subjects)
     
