@@ -77,33 +77,47 @@ megaFrameNaPredmety.grid(row=1, column=2, sticky='nsew')
 
 #   --- FUNKCE      ---
 def volbaKombinace(button_id): # ERROR, BUTTON_ID JE NEUSTALE 116
-    
+    okVar = IntVar()
+
     # otevirani okna
     volbaKombinaceOkno = Toplevel(root)
     volbaKombinaceOkno.title("Výběr kombinace")
     volbaKombinaceOkno.geometry("768x480")
     mainFrameKombinace = Frame(volbaKombinaceOkno)
+    mainFrameKombinace.pack()
 
     mainFrameKombinace.columnconfigure(0, weight=1) # seznam kombinaci
     mainFrameKombinace.columnconfigure(1, weight=1) # tlacitko vyberu
 
-    var = IntVar()         #Creating a variable which will track the selected checkbutton
-    cb = []                #Empty list which is going to hold all the checkbutton        
+    stisknuty_button = IntVar()         #Creating a variable which will track the selected checkbutton
+    cb = []                             #Empty list which is going to hold all the checkbutton        
 
     pocitadloKombinace = 0
     for mozna_kombinace in ss.students[button_id].pass_subj:
         
         mainFrameKombinace.rowconfigure(pocitadloKombinace, weight=1)
-        tempLabelKomb = Label(text=mozna_kombinace, width=24)
-        cb.append(Checkbutton(mainFrameKombinace, onvalue = i, variable = var))
+        tempLabelKomb = Label(mainFrameKombinace, text=mozna_kombinace, width=24)
+        tempButtonKomb = Checkbutton(mainFrameKombinace, onvalue = pocitadloKombinace, variable = stisknuty_button, width=2)
+        cb.append(tempButtonKomb)
 
-        tempLabelKomb.grid(row=pocitadloKombinace, column=0)
-        cb[pocitadloKombinace].grid(row=pocitadloKombinace, column=1)
+        tempLabelKomb.grid(row=pocitadloKombinace, column=0, sticky="nsew")
+        cb[pocitadloKombinace].grid(row=pocitadloKombinace, column=1, sticky="nsew")
 
         pocitadloKombinace += 1
 
+    # close button
+    mainFrameKombinace.rowconfigure(pocitadloKombinace, weight=1)
+    CloseButtonKomb = Button(mainFrameKombinace, text="HOTOVO", command=lambda : okVar.set(1))
+    CloseButtonKomb.grid(row=pocitadloKombinace, column=0, columnspan=2, sticky="nsew")
+    volbaKombinaceOkno.wait_variable(okVar)
+
     # reseni vyberu dane kombinace a jeji oznameni algoritmu
-        
+    ss.student_sel_subject(button_id, stisknuty_button.get())
+
+    # zavreni okna
+    volbaKombinaceOkno.destroy()
+    refresh()
+    
 
 def refresh():
     global statusbar
@@ -182,9 +196,11 @@ def refresh():
     for student in virtualni_seznam_plnych_ramcu:
        
         student_id = student[1].cget("text")
+        sem = student[4].get(), student[5].get(), student[6].get()
 
-        if (student[4].get() in ss.subject) and (student[5].get() in ss.subject) and (student[6].get() in ss.subject):
-            ss.student_change_subjects(student_id, [student[4].get(),student[5].get(),student[6].get()])
+        if (sem[0] in ss.subject) and (sem[1] in ss.subject) and (sem[2] in ss.subject):
+            if (sem != ss.students[student_id].subjects):   # ZMENA, KTERA ROZBILA POCITANI PREDMETU
+                ss.student_change_subjects(student_id, [student[4].get(),student[5].get(),student[6].get()])
 
         else:
             zmenBarvu(int(student_id), "#3333ff")
@@ -231,6 +247,10 @@ def refresh():
                     # 1 spravna kombinace
                     zmenBarvu(int(student_id), "#00ff00")
                     skupinka[9].config(state=DISABLED)
+                elif ss.students[student_id].sel_subj is not None:
+                    # vice moznosti, jiz zvolena
+                    zmenBarvu(int(student_id), "#6a15bf")
+                    skupinka[9].config(state=NORMAL)
                 else:
                     # vice moznzch kombinaci
                     zmenBarvu(int(student_id), "#ddff00")
@@ -343,7 +363,7 @@ def nactiStudentyZeSouboru():
         thirdSem = Entry(frame, width=12); thirdSem.insert(0, tempStudent.subjects[2])
         poradiEntry = Entry(frame, width=8); poradiEntry.insert(0, defPoradi)
         tridaLabel = Label(frame, text=tempStudent.class_id, width=5)
-        zmenaKombinaceButton = Button(frame, text="komb.", state=DISABLED, command=volbaKombinace(int(tempID)))
+        zmenaKombinaceButton = Button(frame, text="komb.", state=DISABLED, command=lambda button_id = tempID: volbaKombinace(button_id))
 
         virtualni_seznam_plnych_ramcu.append([frame, idLabel, jmLabel, prijLabel, firstSem, secondSem, thirdSem, poradiEntry, tridaLabel, zmenaKombinaceButton])
         index_prazdneho_ramce += 1
