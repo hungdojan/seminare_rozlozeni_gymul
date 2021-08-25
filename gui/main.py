@@ -43,10 +43,68 @@ ss = SubSort()
 
 #   --- MAIN        ---
 root = Tk()
-root.title("Pomocnik pro rozrazovani seminaru 1.0.0")
+root.title("Pomocnik pro rozrazovani seminaru 1.0.3")
 root.geometry("1920x810")
 
+#   --- CORE            ---
+# vytvareni objektu: cedulky
+nadpisLevo = Label(root, text="Seznam studentů")
+nadpisStred = Label(root, text="Přehled dnů")
+nadpisPravo = Label(root, text="Přehled předmětů") 
+statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
+
+# generovani te zasrane mrizky
+root.columnconfigure(0, weight=1, minsize=750)      # seznam studentu
+root.columnconfigure(1, weight=1, minsize=800)      # moznost zaskrtavat predmety jednotl. dnu
+root.columnconfigure(2, weight=1, minsize=100)      # prehled predmetu s pocty studentu
+
+root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
+root.rowconfigure(1, weight=10, minsize=680)        # dulezity obsah sloupcu (hodne mista)
+root.rowconfigure(2, weight=1, minsize=12)          # status bar
+
+# prirazeni do mrizky 
+nadpisStred.grid(row=0, column=1)
+nadpisPravo.grid(row=0, column=2)
+statusbar.grid(row=3, column=0, columnspan=3, sticky="nsew")
+
+# obri framy
+megaFrameNaDny = Frame(root)                                # dny v prostrednim sloupci
+megaFrameNaDny.grid(row=1, column=1, sticky='nsew')
+megaFrameNaPredmety = Frame(root)                           # prehled predmetu v pravem sloupci
+megaFrameNaPredmety.grid(row=1, column=2, sticky='nsew')    
+#   --- MUSI BYT NAHORE ---
+
+
 #   --- FUNKCE      ---
+def volbaKombinace(button_id): # ERROR, BUTTON_ID JE NEUSTALE 116
+    
+    # otevirani okna
+    volbaKombinaceOkno = Toplevel(root)
+    volbaKombinaceOkno.title("Výběr kombinace")
+    volbaKombinaceOkno.geometry("768x480")
+    mainFrameKombinace = Frame(volbaKombinaceOkno)
+
+    mainFrameKombinace.columnconfigure(0, weight=1) # seznam kombinaci
+    mainFrameKombinace.columnconfigure(1, weight=1) # tlacitko vyberu
+
+    var = IntVar()         #Creating a variable which will track the selected checkbutton
+    cb = []                #Empty list which is going to hold all the checkbutton        
+
+    pocitadloKombinace = 0
+    for mozna_kombinace in ss.students[button_id].pass_subj:
+        
+        mainFrameKombinace.rowconfigure(pocitadloKombinace, weight=1)
+        tempLabelKomb = Label(text=mozna_kombinace, width=24)
+        cb.append(Checkbutton(mainFrameKombinace, onvalue = i, variable = var))
+
+        tempLabelKomb.grid(row=pocitadloKombinace, column=0)
+        cb[pocitadloKombinace].grid(row=pocitadloKombinace, column=1)
+
+        pocitadloKombinace += 1
+
+    # reseni vyberu dane kombinace a jeji oznameni algoritmu
+        
+
 def refresh():
     global statusbar
     global virtualni_seznam_plnych_ramcu
@@ -120,7 +178,7 @@ def refresh():
             pocitadloDnu += 1
 
     # prezkoumani studentu se zmenenymi predmety
-    # [Frame, ID Label, Jmeno Label, Prijmeni Label, 1.sem Entry, 2.sem Entry, 3.sem Entry, poradi, trida] = student
+    # [Frame, ID Label, Jmeno Label, Prijmeni Label, 1.sem Entry, 2.sem Entry, 3.sem Entry, poradi, trida, tlacitko] = student
     for student in virtualni_seznam_plnych_ramcu:
        
         student_id = student[1].cget("text")
@@ -166,12 +224,18 @@ def refresh():
                 student_id = skupinka[1].cget("text")
                 pocet_komp_pred = len(ss.students[student_id].pass_subj)
                 if pocet_komp_pred == 0:
+                    # zadna vhodna kombinace
                     zmenBarvu(int(student_id), "#ff0000")
+                    skupinka[9].config(state=DISABLED)
                 elif pocet_komp_pred == 1:
-                    zmenBarvu(int(student_id), "#33ff00")
+                    # 1 spravna kombinace
+                    zmenBarvu(int(student_id), "#00ff00")
+                    skupinka[9].config(state=DISABLED)
                 else:
-                    zmenBarvu(int(student_id), "#ffff00")
-        
+                    # vice moznzch kombinaci
+                    zmenBarvu(int(student_id), "#ddff00")
+                    skupinka[9].config(state=NORMAL)
+
         poradnik += 1
 
     # update status baru
@@ -264,13 +328,14 @@ def nactiStudentyZeSouboru():
 
     # pridavani podrazenych poli do framu kazdeho studenta
     # sklada se z listu: 
-    # [Frame, ID Label, Jmeno Label, Prijmeni Label, 1.sem Entry, 2.sem Entry, 3.sem Entry, poradi, trida]
+    # [Frame, ID Label, Jmeno Label, Prijmeni Label, 1.sem Entry, 2.sem Entry, 3.sem Entry, poradi, trida, TLACITKO NA ZMENU KOMBINACE]
     for key in ss.students:
         defPoradi = len(virtualni_seznam_plnych_ramcu)
         tempStudent = ss.students[key]
+        tempID = tempStudent.id
 
         frame = virtualni_seznam_prazdnych_ramcu[index_prazdneho_ramce]
-        idLabel = Label(frame, text=tempStudent.id, width=5)
+        idLabel = Label(frame, text=tempID, width=5)
         jmLabel = Label(frame, text=tempStudent.first_name, width=18)
         prijLabel = Label(frame, text=tempStudent.last_name, width=18)
         firstSem = Entry(frame, width=12); firstSem.insert(0, tempStudent.subjects[0])
@@ -278,8 +343,9 @@ def nactiStudentyZeSouboru():
         thirdSem = Entry(frame, width=12); thirdSem.insert(0, tempStudent.subjects[2])
         poradiEntry = Entry(frame, width=8); poradiEntry.insert(0, defPoradi)
         tridaLabel = Label(frame, text=tempStudent.class_id, width=5)
+        zmenaKombinaceButton = Button(frame, text="komb.", state=DISABLED, command=volbaKombinace(int(tempID)))
 
-        virtualni_seznam_plnych_ramcu.append([frame, idLabel, jmLabel, prijLabel, firstSem, secondSem, thirdSem, poradiEntry, tridaLabel])
+        virtualni_seznam_plnych_ramcu.append([frame, idLabel, jmLabel, prijLabel, firstSem, secondSem, thirdSem, poradiEntry, tridaLabel, zmenaKombinaceButton])
         index_prazdneho_ramce += 1
         poradnikMAX = defPoradi
 
@@ -303,6 +369,7 @@ def nactiStudentyZeSouboru():
                 skupinka[0].columnconfigure(4, weight=3, uniform=12)
                 skupinka[0].columnconfigure(5, weight=3, uniform=12)
                 skupinka[0].columnconfigure(6, weight=3, uniform=12)
+                skupinka[0].columnconfigure(7, weight=3, uniform=12)
                 skupinka[0].config(bg="#000000")
 
                 # umistovani do sloupecku
@@ -313,6 +380,7 @@ def nactiStudentyZeSouboru():
                 skupinka[4].grid(row=0, column=4, stick="nsew")
                 skupinka[5].grid(row=0, column=5, stick="nsew")
                 skupinka[6].grid(row=0, column=6, stick="nsew")
+                skupinka[9].grid(row=0, column=7, stick="nsew")
         poradnik += 1
 
     # update statusbaru
@@ -371,11 +439,13 @@ def pridejDen():
     # pridavani podrazenych poli do framu kazdeho predmetu
     # sklada se z listu: 
     # [Frame, CheckBox s nazvem predmetu, pocet studentu Label, zavisla promenna pro checkerbox]
-    for predmet in ss.subject:
+    lof_subjects = list(ss.subject)
+    lof_subjects.sort()
+    for predmet in lof_subjects:
         checkerboxPromenna = IntVar()
         tempFramePredmetu = Frame(tempFrameDne)
         tempCheckButton = Checkbutton(tempFramePredmetu, text=predmet, variable=checkerboxPromenna, onvalue=1, offvalue=0)
-        tempLabel = Label(tempFramePredmetu, text="0")
+        tempLabel = Label(tempFramePredmetu, text="0", width=2)
 
         tempSeznamPredmetu.append([tempFramePredmetu, tempCheckButton, tempLabel, checkerboxPromenna])
 
@@ -419,13 +489,27 @@ def oznamovaciOkno(jmeno, rozliseni, textHlaseni):
     Label(newWindow,
           text=textHlaseni).pack()
 
+def exportDat():
+    refresh()
+    cesta_export = fd.askdirectory(title='Vyberte složku pro export dat')
+    if cesta_export == "" or cesta_export == None:
+        oznamovaciOkno("ERROR", "250x100", "Nepodařilo se vyexportovat data")
+    else:    
+        ss.generate_files(cesta_export)
+        hlaseni_o_exportu = "Data byla úspěšně vyexportována do " + cesta_export
+        oznamovaciOkno("Úspěch", "500x100", hlaseni_o_exportu)
+
+#   --- KONEC FUNKCI    ---
+
+
 #   --- MENU BAR    ---
 menubar = Menu(root, tearoff=0)
-menubar.add_command(label="PŘEPOČÍTEJ", command=refresh)                                # 0
-menubar.add_command(label="Vybrat soubor se studenty", command=nactiStudentyZeSouboru)  # 1
-menubar.add_command(label="Vybrat soubor s předměty", command=nactiPredmetyZeSouboru)   # 2
-menubar.add_command(label="Přidat nový den", command=pridejDen, state=DISABLED)         # 3
-menubar.add_command(label="Odebrat poslední den", command=odeberDen, state=DISABLED)    # 4
+menubar.add_command(label="PŘEPOČÍTEJ", command=refresh)                               # 0
+menubar.add_command(label="Vybrat soubor se studenty", command=nactiStudentyZeSouboru) # 1
+menubar.add_command(label="Vybrat soubor s předměty", command=nactiPredmetyZeSouboru)  # 2
+menubar.add_command(label="Přidat nový den", command=pridejDen, state=DISABLED)        # 3
+menubar.add_command(label="Odebrat poslední den", command=odeberDen, state=DISABLED)   # 4
+menubar.add_command(label="Exportovat data do souboru", command=exportDat)             # 5
 
 #   --- SCROLL BAR  ---
 container = Frame(root) 
@@ -443,34 +527,6 @@ scrollable_frame.bind(
 canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
 
 canvas.configure(yscrollcommand=scrollbar.set)
-
-
-#   --- CORE        ---
-# vytvareni objektu: cedulky
-nadpisLevo = Label(root, text="Seznam studentů")
-nadpisStred = Label(root, text="Přehled dnů")
-nadpisPravo = Label(root, text="Přehled předmětů") 
-statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
-
-# generovani te zasrane mrizky
-root.columnconfigure(0, weight=1, minsize=650)      # seznam studentu
-root.columnconfigure(1, weight=1, minsize=750)      # moznost zaskrtavat predmety jednotl. dnu
-root.columnconfigure(2, weight=1, minsize=300)      # prehled predmetu s pocty studentu
-
-root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
-root.rowconfigure(1, weight=10, minsize=680)        # dulezity obsah sloupcu (hodne mista)
-root.rowconfigure(2, weight=1, minsize=12)          # status bar
-
-# prirazeni do mrizky 
-nadpisStred.grid(row=0, column=1)
-nadpisPravo.grid(row=0, column=2)
-statusbar.grid(row=3, column=0, columnspan=3, sticky="nsew")
-
-# obri framy
-megaFrameNaDny = Frame(root)                                # dny v prostrednim sloupci
-megaFrameNaDny.grid(row=1, column=1, sticky='nsew')
-megaFrameNaPredmety = Frame(root)                           # prehled predmetu v pravem sloupci
-megaFrameNaPredmety.grid(row=1, column=2, sticky='nsew')    
 
 # scrollovaci oblast v layoutu
 container.grid(row=1, column=0, sticky='nsew')

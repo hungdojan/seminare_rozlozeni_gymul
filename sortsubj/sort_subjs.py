@@ -134,7 +134,7 @@ class SubSort:
         
         # prirazeni nove kombinace studentovi a vynuluje data studenta
         self.students[id].subjects = new_subjects
-        self.studnets[id].clear_data()
+        self.students[id].clear_data()
 
         # pridani studenta do vybranych predmetu
         if self.students[id].subjects is not None:
