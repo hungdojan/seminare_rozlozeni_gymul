@@ -578,8 +578,6 @@ class SubSort:
             Doporucuju si napsat nejake pomocne funkce
                 -> pokud budou v teto tride -> nazev zacina dvema podtrzitky; pr.: __moje_funkce(self)
         """
-        # Aktualizace dat
-        self.request_update()
 
         for id in self.students:
             
