@@ -251,11 +251,11 @@ def refresh():
                 pocet_komp_pred = len(ss.students[student_id].pass_subj)
                 if pocet_komp_pred == 0:
                     # zadna vhodna kombinace
-                    zmenBarvu(int(student_id), "#ff0000")
+                    zmenBarvu(int(student_id), "#cc0000")
                     skupinka[9].config(state=DISABLED)
                 elif pocet_komp_pred == 1:
                     # 1 spravna kombinace
-                    zmenBarvu(int(student_id), "#00ff00")
+                    zmenBarvu(int(student_id), "#00dd00")
                     skupinka[9].config(state=DISABLED)
                 elif ss.students[student_id].sel_subj is not None:
                     # vice moznosti, jiz zvolena
@@ -263,7 +263,7 @@ def refresh():
                     skupinka[9].config(state=NORMAL)
                 else:
                     # vice moznzch kombinaci
-                    zmenBarvu(int(student_id), "#ddff00")
+                    zmenBarvu(int(student_id), "#ffcd00")
                     skupinka[9].config(state=NORMAL)
 
         poradnik += 1
