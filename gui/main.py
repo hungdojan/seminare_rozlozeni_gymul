@@ -43,7 +43,7 @@ ss = SubSort()
 
 #   --- MAIN        ---
 root = Tk()
-root.title("Pomocnik pro rozrazovani seminaru 1.0.5")
+root.title("Pomocnik pro rozrazovani seminaru 1.1.0")
 root.geometry("1920x810")
 
 #   --- CORE            ---
@@ -97,18 +97,28 @@ def volbaKombinace(button_id): # ERROR, BUTTON_ID JE NEUSTALE 116
         
         mainFrameKombinace.rowconfigure(pocitadloKombinace, weight=1)
         tempLabelKomb = Label(mainFrameKombinace, text=mozna_kombinace, width=24)
-        tempButtonKomb = Checkbutton(mainFrameKombinace, onvalue = pocitadloKombinace, variable = stisknuty_button, width=2)
+        tempButtonKomb = Checkbutton(mainFrameKombinace, onvalue = pocitadloKombinace, variable = stisknuty_button, width=2, state=DISABLED)
         cb.append(tempButtonKomb)
 
         tempLabelKomb.grid(row=pocitadloKombinace, column=0, sticky="nsew")
         cb[pocitadloKombinace].grid(row=pocitadloKombinace, column=1, sticky="nsew")
 
+        if mozna_kombinace == ss.students[button_id].sel_subj:
+            stisknuty_button.set(pocitadloKombinace)
+
         pocitadloKombinace += 1
 
     # close button
     mainFrameKombinace.rowconfigure(pocitadloKombinace, weight=1)
-    CloseButtonKomb = Button(mainFrameKombinace, text="HOTOVO", command=lambda : okVar.set(1))
+    CloseButtonKomb = Button(mainFrameKombinace, text="HOTOVO", state=DISABLED, command=lambda : okVar.set(1))
     CloseButtonKomb.grid(row=pocitadloKombinace, column=0, columnspan=2, sticky="nsew")
+
+    # tesne pred cekanim umozneni volby
+    for cudlik in cb:
+        cudlik.config(state=NORMAL)
+    CloseButtonKomb.config(state=NORMAL)
+
+    # uzavreni okna
     volbaKombinaceOkno.wait_variable(okVar)
 
     # reseni vyberu dane kombinace a jeji oznameni algoritmu
@@ -529,7 +539,7 @@ def exportDat():
 
 #   --- MENU BAR    ---
 menubar = Menu(root, tearoff=0)
-menubar.add_command(label="PŘEPOČÍTEJ", command=refresh)                               # 0
+menubar.add_command(label="REFRESH", command=refresh)                                  # 0
 menubar.add_command(label="Vybrat soubor se studenty", command=nactiStudentyZeSouboru) # 1
 menubar.add_command(label="Vybrat soubor s předměty", command=nactiPredmetyZeSouboru)  # 2
 menubar.add_command(label="Přidat nový den", command=pridejDen, state=DISABLED)        # 3
