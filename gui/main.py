@@ -43,7 +43,7 @@ ss = SubSort()
 
 #   --- MAIN        ---
 root = Tk()
-root.title("Pomocnik pro rozrazovani seminaru 1.0.4")
+root.title("Pomocnik pro rozrazovani seminaru 1.0.5")
 root.geometry("1920x810")
 
 #   --- CORE            ---
@@ -54,7 +54,7 @@ nadpisPravo = Label(root, text="Přehled předmětů")
 statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
 
 # generovani te zasrane mrizky
-root.columnconfigure(0, weight=1, minsize=650)      # seznam studentu
+root.columnconfigure(0, weight=1, minsize=700)      # seznam studentu
 root.columnconfigure(1, weight=1, minsize=1000)      # moznost zaskrtavat predmety jednotl. dnu
 root.columnconfigure(2, weight=1, minsize=12)      # prehled predmetu s pocty studentu
 
@@ -69,7 +69,7 @@ statusbar.grid(row=3, column=0, columnspan=3, sticky="nsew")
 
 # obri framy
 megaFrameNaDny = Frame(root)                                # dny v prostrednim sloupci
-megaFrameNaDny.grid(row=1, column=1, sticky='nsw')
+megaFrameNaDny.grid(row=1, column=1, sticky='nsew')
 megaFrameNaPredmety = Frame(root)                           # prehled predmetu v pravem sloupci
 megaFrameNaPredmety.grid(row=1, column=2, sticky='nsew')    
 #   --- MUSI BYT NAHORE ---
