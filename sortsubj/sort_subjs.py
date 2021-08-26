@@ -147,9 +147,13 @@ class SubSort:
             for sub in self.students[id].subjects:
                 if sub in self.students_per_subject and id in self.students_per_subject[sub]:
                     self.students_per_subject[sub].remove(id)
+            # Odstranuje zaka z vybranych dnu
+            if self.students[id].sel_subj is not None:
+                for i in range(len(self.students[id].sel_subj)):
+                    self.days[i].subjects[self.students[id].sel_subj[i]].remove_student(id)
         
         # prirazeni nove kombinace studentovi a vynuluje data studenta
-        self.students[id].subjects = new_subjects
+        self.students[id].subjects = tuple(new_subjects)
         self.students[id].clear_data()
 
         # pridani studenta do vybranych predmetu
