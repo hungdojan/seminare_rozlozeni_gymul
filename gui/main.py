@@ -50,13 +50,13 @@ root.geometry("1920x810")
 # vytvareni objektu: cedulky
 nadpisLevo = Label(root, text="Seznam studentů")
 nadpisStred = Label(root, text="Přehled dnů")
-nadpisPravo = Label(root, text="Přehled předmětů") 
+nadpisPravo = Label(root, text="Přehled") 
 statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
 
 # generovani te zasrane mrizky
-root.columnconfigure(0, weight=1, minsize=700)      # seznam studentu
+root.columnconfigure(0, weight=1, minsize=700)       # seznam studentu
 root.columnconfigure(1, weight=1, minsize=1000)      # moznost zaskrtavat predmety jednotl. dnu
-root.columnconfigure(2, weight=1, minsize=12)      # prehled predmetu s pocty studentu
+root.columnconfigure(2, weight=1, minsize=12)        # prehled predmetu s pocty studentu
 
 root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
 root.rowconfigure(1, weight=10, minsize=680)        # dulezity obsah sloupcu (hodne mista)
