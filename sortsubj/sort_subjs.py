@@ -50,15 +50,6 @@ class SubSort:
         my_list.sort()
         return KEY_DELIM.join(my_list)
     
-    ## Funkce vraci pocet zaku, ktery navstevuje dany predmet
-    #
-    #  @param subj_name Jmeno predmetu
-    #  @return Pocet zaku v danem predmetu; #NONE pokud predmet neexistuje
-    def get_nof_students_in_subject(self, subj_name):
-        if subj_name in self.students_per_subject:
-            return len(self.students_per_subject[subj_name])
-        return None
-    
     ## Funkce nove roztridi dny do hashmapy kombinaci
     def __update_combinations(self):
         # nacte seznam predmetu za kazdy den
@@ -97,6 +88,59 @@ class SubSort:
                     self.students_per_subject[subject] = set()
                     # Prida do seznamu ID studenta
                 self.students_per_subject[subject].add(student_id)
+    
+    ## Funkce vraci pocet zaku, ktery navstevuje dany predmet
+    #
+    #  @param subj_name Jmeno predmetu
+    #  @return Pocet zaku v danem predmetu; #NONE pokud predmet neexistuje
+    def get_nof_students_in_subject(self, subj_name):
+        if subj_name in self.students_per_subject:
+            return len(self.students_per_subject[subj_name])
+        return None
+
+    ## Funkce zjistuje, zda neuplna kombinace jde setridit
+    #
+    #  @param subject Studentuv vyber predmetu
+    def __get_custom_combination(self, subject: tuple):
+        """
+            Prochazi se cely seznam vsech kombinaci, kde se vezmou jednotlive klice, ty se rozdeli 
+            na jednotlive predmety podle KEY_DELIM a ulozi do listu.
+                Pr. aj-b-d --> ['aj', 'b', 'd']
+            Pote odstrani nedefinovane predmety u studenta.
+                Pr. ('a', 'd', None) -> ['a', 'd']
+            A porovnava tyto listy. Pokud budou vsechny predmety ve studentovem seznamu v kombinovanem seznamu.
+            Projedou se jednotlive kombinace nachazejici se pod danym klicem (self.__hashmap_combination['aj-b-d'])
+            a zkontroluje se, zda v dany den muze student tento predmet navstevovat. Pokud ne, na takovem miste nastavi
+            hodnotu #NONE. Nakonec vyslednou kombinaci ulozi do seznamu nalezenych kombinaci a tu nakonec vrati.
+                Pr. nalezena kombinace je ['a', None, 'd']
+        """
+        all_combinations = list()
+        # studentuv vyber bez None
+        temp_student_list = list(filter(None, subject))
+        for key in self.__hashmap_combination:
+            # predmety v kombinaci
+            key_list = key.split(KEY_DELIM)
+    
+            # Vsechny predmety souhlasi
+            if all(item in key_list for item in temp_student_list):
+                # Vysledny list se vybery dnu
+                # prochazi vsechny predmety v kombinaci (dnu)
+                for comb in self.__hashmap_combination[key]:
+                    output_list = list()
+                    for sub in comb:
+                        # pokud je dany predmet vybran i studenten, je vlozen 
+                        if sub in temp_student_list:
+                            output_list.append(sub)
+                        # pokud student nema vybrany dany predmet, je do toho dne nastaven #NONE
+                        else:
+                            output_list.append(None)
+
+                    output_list = tuple(output_list)
+                    # prida finalni kombinaci, pokud jeste nebyla ulozena
+                    if output_list not in all_combinations:
+                        all_combinations.append(output_list)
+
+        return all_combinations
 
     ## Aktualizace flagu a seznamu
     def request_update(self):
@@ -497,50 +541,6 @@ class SubSort:
         self.__recalculate_students_per_subjects()
         return True
 
-    ## Funkce zjistuje, zda neuplna kombinace jde setridit
-    #
-    #  @param subject Studentuv vyber predmetu
-    def __get_custom_combination(self, subject: tuple):
-        """
-            Prochazi se cely seznam vsech kombinaci, kde se vezmou jednotlive klice, ty se rozdeli 
-            na jednotlive predmety podle KEY_DELIM a ulozi do listu.
-                Pr. aj-b-d --> ['aj', 'b', 'd']
-            Pote odstrani nedefinovane predmety u studenta.
-                Pr. ('a', 'd', None) -> ['a', 'd']
-            A porovnava tyto listy. Pokud budou vsechny predmety ve studentovem seznamu v kombinovanem seznamu.
-            Projedou se jednotlive kombinace nachazejici se pod danym klicem (self.__hashmap_combination['aj-b-d'])
-            a zkontroluje se, zda v dany den muze student tento predmet navstevovat. Pokud ne, na takovem miste nastavi
-            hodnotu #NONE. Nakonec vyslednou kombinaci ulozi do seznamu nalezenych kombinaci a tu nakonec vrati.
-                Pr. nalezena kombinace je ['a', None, 'd']
-        """
-        all_combinations = list()
-        # studentuv vyber bez None
-        temp_student_list = list(filter(None, subject))
-        for key in self.__hashmap_combination:
-            # predmety v kombinaci
-            key_list = key.split(KEY_DELIM)
-    
-            # Vsechny predmety souhlasi
-            if all(item in key_list for item in temp_student_list):
-                # Vysledny list se vybery dnu
-                # prochazi vsechny predmety v kombinaci (dnu)
-                for comb in self.__hashmap_combination[key]:
-                    output_list = list()
-                    for sub in comb:
-                        # pokud je dany predmet vybran i studenten, je vlozen 
-                        if sub in temp_student_list:
-                            output_list.append(sub)
-                        # pokud student nema vybrany dany predmet, je do toho dne nastaven #NONE
-                        else:
-                            output_list.append(None)
-
-                    output_list = tuple(output_list)
-                    # prida finalni kombinaci, pokud jeste nebyla ulozena
-                    if output_list not in all_combinations:
-                        all_combinations.append(output_list)
-
-        return all_combinations
-
     ## Funkce prerovna studenty do danych dnu a predmetu
     def sort_data(self):
         """
@@ -593,8 +593,6 @@ class SubSort:
 
         for id in self.students:
 
-            self.__update_combinations()
-            
             # preskakuje jiz roztrizene studenty
             if self.students[id].sorted:
                 continue
@@ -654,12 +652,15 @@ class SubSort:
             for i in range(len(self.days)):
                 # Vybrany den
                 f.write(f'Den {i}{OUTPUT_EOF}')
-                for subj_key in self.days[i].subjects:
+                # Setrideni predmetu abecedne
+                subj_key = list(self.days[i].subjects)
+                subj_key.sort()
+                for subj in subj_key:
                     # Vybrany predmet
-                    f.write(subj_key + OUTPUT_EOF)
-                    for stud in self.days[i].subjects[subj_key].lof_students:
+                    f.write(subj + OUTPUT_EOF)
+                    for stud in self.days[i].subjects[subj].lof_students:
                         # Vypis studentu v predmetu
-                        student = self.days[i].subjects[subj_key].lof_students[stud]
+                        student = self.days[i].subjects[subj].lof_students[stud]
                         f.write('{},{},{},{}'.format(student.id, student.first_name, student.last_name, student.class_id))
                         f.write(OUTPUT_EOF)
                     f.write(OUTPUT_EOF)
@@ -689,6 +690,9 @@ class SubSort:
         self.students.clear()
         self.subject.clear()
         self.days.clear()
+        self.students_per_subject.clear()
+        self.__hashmap_combination.clear()
+        self.__hashmap_custom_combination.clear()
         self.__day_up_to_dated = True
         self.__subj_up_to_dated = True
         self.nof_sorted_students = 0
