@@ -43,7 +43,7 @@ ss = SubSort()
 
 #   --- MAIN        ---
 root = Tk()
-root.title("Pomocnik pro rozrazovani seminaru 1.0.3")
+root.title("Pomocnik pro rozrazovani seminaru 1.0.4")
 root.geometry("1920x810")
 
 #   --- CORE            ---
@@ -54,8 +54,8 @@ nadpisPravo = Label(root, text="Přehled předmětů")
 statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
 
 # generovani te zasrane mrizky
-root.columnconfigure(0, weight=1, minsize=800)      # seznam studentu
-root.columnconfigure(1, weight=1, minsize=800)      # moznost zaskrtavat predmety jednotl. dnu
+root.columnconfigure(0, weight=1, minsize=650)      # seznam studentu
+root.columnconfigure(1, weight=1, minsize=1000)      # moznost zaskrtavat predmety jednotl. dnu
 root.columnconfigure(2, weight=1, minsize=30)      # prehled predmetu s pocty studentu
 
 root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
@@ -360,9 +360,9 @@ def nactiStudentyZeSouboru():
         idLabel = Label(frame, text=tempID, width=5)
         jmLabel = Label(frame, text=tempStudent.first_name, width=18)
         prijLabel = Label(frame, text=tempStudent.last_name, width=18)
-        firstSem = Entry(frame, width=12); firstSem.insert(0, tempStudent.subjects[0])
-        secondSem = Entry(frame, width=12); secondSem.insert(0, tempStudent.subjects[1])
-        thirdSem = Entry(frame, width=12); thirdSem.insert(0, tempStudent.subjects[2])
+        firstSem = Entry(frame, width=8); firstSem.insert(0, tempStudent.subjects[0])
+        secondSem = Entry(frame, width=8); secondSem.insert(0, tempStudent.subjects[1])
+        thirdSem = Entry(frame, width=8); thirdSem.insert(0, tempStudent.subjects[2])
         poradiEntry = Entry(frame, width=8); poradiEntry.insert(0, defPoradi)
         tridaLabel = Label(frame, text=tempStudent.class_id, width=5)
         zmenaKombinaceButton = Button(frame, text="komb.", state=DISABLED, command=lambda button_id = tempID: volbaKombinace(button_id))
@@ -560,12 +560,12 @@ scrollbar.pack(side="right", fill=Y)
 # bunka s nadpisy (jako by neexistujici student nahore ve sloupecku, ale nebude veden v zadnem virtualnim seznamu)
 nadpisovyFrame = Frame(root)
 idLabel_nadp = Label(nadpisovyFrame, text="ID", width=5)
-jmLabel_nadp = Label(nadpisovyFrame, text="JMÉNO", width=17)
-prijLabel_nadp = Label(nadpisovyFrame, text="PŘÍJMENÍ", width=17)
-firstSemLabel_nadp = Label(nadpisovyFrame, text="1. SEMINÁŘ", width=11)
-secondSemLabel_nadp = Label(nadpisovyFrame, text="2. SEMINÁŘ", width=11)
-thirdSemLabel_nadp = Label(nadpisovyFrame, text="3. SEMINÁŘ", width=11)
-tridaLabel_nadp = Label(nadpisovyFrame, text="TŘÍDA", width=8)
+jmLabel_nadp = Label(nadpisovyFrame, text="JMÉNO", width=18)
+prijLabel_nadp = Label(nadpisovyFrame, text="PŘÍJMENÍ", width=11)
+firstSemLabel_nadp = Label(nadpisovyFrame, text="SEM1", width=7)
+secondSemLabel_nadp = Label(nadpisovyFrame, text="SEM2", width=7)
+thirdSemLabel_nadp = Label(nadpisovyFrame, text="SEM3", width=7)
+tridaLabel_nadp = Label(nadpisovyFrame, text="TŘÍDA", width=6)
 
 # umisteni nadpisoveho framu
 nadpisovyFrame.grid(row=0, column=0, stick="w")
