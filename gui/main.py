@@ -54,9 +54,9 @@ nadpisPravo = Label(root, text="Přehled předmětů")
 statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
 
 # generovani te zasrane mrizky
-root.columnconfigure(0, weight=1, minsize=750)      # seznam studentu
+root.columnconfigure(0, weight=1, minsize=800)      # seznam studentu
 root.columnconfigure(1, weight=1, minsize=800)      # moznost zaskrtavat predmety jednotl. dnu
-root.columnconfigure(2, weight=1, minsize=100)      # prehled predmetu s pocty studentu
+root.columnconfigure(2, weight=1, minsize=30)      # prehled predmetu s pocty studentu
 
 root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
 root.rowconfigure(1, weight=10, minsize=680)        # dulezity obsah sloupcu (hodne mista)
@@ -275,15 +275,15 @@ def refresh():
         megaFrameNaPredmety.rowconfigure(pocitadloRadkuVPravemSloupci, weight=1)
 
         tempPrehledovyFrame = Frame(megaFrameNaPredmety)
-        tempPrehledovyFrame_predmet = Label(tempPrehledovyFrame, text=predmet, width=14)
-        tempPrehledovyLabel_pocet = Label(tempPrehledovyFrame, text=len(ss.students_per_subject[predmet]), width=5)
+        tempPrehledovyLabel_predmet = Label(tempPrehledovyFrame, text=predmet, width=6)
+        tempPrehledovyLabel_pocet = Label(tempPrehledovyFrame, text=len(ss.students_per_subject[predmet]), width=3)
 
         tempPrehledovyFrame.rowconfigure(0, weight=1)
         tempPrehledovyFrame.columnconfigure(0, weight=1)
         tempPrehledovyFrame.columnconfigure(1, weight=1)
 
         tempPrehledovyFrame.grid(row=pocitadloRadkuVPravemSloupci, column=0, sticky='w', padx=16)
-        tempPrehledovyFrame_predmet.grid(row=0, column=0, sticky='nsew')
+        tempPrehledovyLabel_predmet.grid(row=0, column=0, sticky='nsew')
         tempPrehledovyLabel_pocet.grid(row=0, column=1, sticky='nsew')
         tempPrehledovyFrame.config(highlightbackground="#000000", highlightcolor="#000000", highlightthickness=1)
 
