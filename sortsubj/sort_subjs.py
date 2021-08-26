@@ -79,6 +79,22 @@ class SubSort:
                 self.__hashmap_combination[key] = list()
             self.__hashmap_combination[key].append(comb)
 
+    ## Funkce znovu prepocita studenty v jednotlivych predmetech
+    def __recalculate_students_per_subjects(self):
+        # Vynuluje dosavadni data
+        list(map(lambda x: self.students_per_subject[x].clear(), self.students_per_subject.keys()))
+
+        # Projizdi seznam studentu
+        for student_id in self.students:
+            # Projizdi studentuv vyber
+            for subject in self.students[student_id].subjects:
+                # Vytvari novy predmet, pokud jeste nebyl definovany
+                if (subject not in self.students_per_subject and 
+                        subject in self.subject):
+                    self.students_per_subject[subject] = set()
+                    # Prida do seznamu ID studenta
+                self.students_per_subject[subject].add(student_id)
+
     ## Aktualizace flagu a seznamu
     def request_update(self):
         self.__day_up_to_dated = False
@@ -466,6 +482,7 @@ class SubSort:
             for line in f:
                 self.add_subject(line.rstrip(EOF))
         self.request_update()
+        self.__recalculate_students_per_subjects()
         return True
 
     ## Funkce zjistuje, zda neuplna kombinace jde setridit

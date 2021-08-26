@@ -268,7 +268,9 @@ def refresh():
     # vykresleni prehledu predmetu v pravem sloupci spolu s cislem prihlasenych zaku
     megaFrameNaPredmety.columnconfigure(0, weight=1)
     pocitadloRadkuVPravemSloupci = 0
-    for predmet in ss.subject:
+    lof_subjects = list(ss.subject)
+    lof_subjects.sort()
+    for predmet in lof_subjects:
 
         megaFrameNaPredmety.rowconfigure(pocitadloRadkuVPravemSloupci, weight=1)
 
