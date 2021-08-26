@@ -270,24 +270,27 @@ def refresh():
     pocitadloRadkuVPravemSloupci = 0
     lof_subjects = list(ss.subject)
     lof_subjects.sort()
-    for predmet in lof_subjects:
+    poradnikPredmetuPravehoSloupce = len(ss.students)
+    while poradnikPredmetuPravehoSloupce >= 0:
+        for predmet in lof_subjects:
+            if poradnikPredmetuPravehoSloupce == len(ss.students_per_subject[predmet]):
+                megaFrameNaPredmety.rowconfigure(pocitadloRadkuVPravemSloupci, weight=1)
 
-        megaFrameNaPredmety.rowconfigure(pocitadloRadkuVPravemSloupci, weight=1)
+                tempPrehledovyFrame = Frame(megaFrameNaPredmety)
+                tempPrehledovyLabel_predmet = Label(tempPrehledovyFrame, text=predmet, width=6)
+                tempPrehledovyLabel_pocet = Label(tempPrehledovyFrame, text=len(ss.students_per_subject[predmet]), width=3)
 
-        tempPrehledovyFrame = Frame(megaFrameNaPredmety)
-        tempPrehledovyLabel_predmet = Label(tempPrehledovyFrame, text=predmet, width=6)
-        tempPrehledovyLabel_pocet = Label(tempPrehledovyFrame, text=len(ss.students_per_subject[predmet]), width=3)
+                tempPrehledovyFrame.rowconfigure(0, weight=1)
+                tempPrehledovyFrame.columnconfigure(0, weight=1)
+                tempPrehledovyFrame.columnconfigure(1, weight=1)
 
-        tempPrehledovyFrame.rowconfigure(0, weight=1)
-        tempPrehledovyFrame.columnconfigure(0, weight=1)
-        tempPrehledovyFrame.columnconfigure(1, weight=1)
+                tempPrehledovyFrame.grid(row=pocitadloRadkuVPravemSloupci, column=0, sticky='w', padx=16)
+                tempPrehledovyLabel_predmet.grid(row=0, column=0, sticky='nsew')
+                tempPrehledovyLabel_pocet.grid(row=0, column=1, sticky='nsew')
+                tempPrehledovyFrame.config(highlightbackground="#000000", highlightcolor="#000000", highlightthickness=1)
 
-        tempPrehledovyFrame.grid(row=pocitadloRadkuVPravemSloupci, column=0, sticky='w', padx=16)
-        tempPrehledovyLabel_predmet.grid(row=0, column=0, sticky='nsew')
-        tempPrehledovyLabel_pocet.grid(row=0, column=1, sticky='nsew')
-        tempPrehledovyFrame.config(highlightbackground="#000000", highlightcolor="#000000", highlightthickness=1)
-
-        pocitadloRadkuVPravemSloupci += 1
+                pocitadloRadkuVPravemSloupci += 1
+        poradnikPredmetuPravehoSloupce -= 1
 
     # update status baru
     statusbar.config(text="Všechny operace dokončeny, momentálně nepracuji.")
