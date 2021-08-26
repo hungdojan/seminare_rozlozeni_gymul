@@ -56,7 +56,7 @@ statusbar = Label(root, text="Nic nedělám.", bd=1, relief=SUNKEN, anchor="w")
 # generovani te zasrane mrizky
 root.columnconfigure(0, weight=1, minsize=650)      # seznam studentu
 root.columnconfigure(1, weight=1, minsize=1000)      # moznost zaskrtavat predmety jednotl. dnu
-root.columnconfigure(2, weight=1, minsize=30)      # prehled predmetu s pocty studentu
+root.columnconfigure(2, weight=1, minsize=12)      # prehled predmetu s pocty studentu
 
 root.rowconfigure(0, weight=2, minsize=25)          # nadpisy
 root.rowconfigure(1, weight=10, minsize=680)        # dulezity obsah sloupcu (hodne mista)
@@ -69,7 +69,7 @@ statusbar.grid(row=3, column=0, columnspan=3, sticky="nsew")
 
 # obri framy
 megaFrameNaDny = Frame(root)                                # dny v prostrednim sloupci
-megaFrameNaDny.grid(row=1, column=1, sticky='nsew')
+megaFrameNaDny.grid(row=1, column=1, sticky='nsw')
 megaFrameNaPredmety = Frame(root)                           # prehled predmetu v pravem sloupci
 megaFrameNaPredmety.grid(row=1, column=2, sticky='nsew')    
 #   --- MUSI BYT NAHORE ---
