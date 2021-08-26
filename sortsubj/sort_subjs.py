@@ -6,6 +6,7 @@
 #  @version 1.0.0
 #  @copyright GNU Public License v3.0
 
+import copy
 import re
 import os
 import codecs
@@ -77,7 +78,9 @@ class SubSort:
             key = self.__combination_to_key(comb)
             if key not in self.__hashmap_combination:
                 self.__hashmap_combination[key] = list()
-            self.__hashmap_combination[key].append(comb)
+            # prevence pred duplikaty
+            if comb not in self.__hashmap_combination[key]:
+                self.__hashmap_combination[key].append(comb)
 
     ## Funkce znovu prepocita studenty v jednotlivych predmetech
     def __recalculate_students_per_subjects(self):
@@ -397,6 +400,8 @@ class SubSort:
                 # rozdeleni radku pomoci znaku ',' a ';'
                 # a mazani koncovky konce radku; os.linesep zajisti spravny znak napric OS
                 data = re.split(INPUT_FILE_DELIM, line.rstrip(EOF))
+                if len(data) < 7:
+                    continue
                 # ID studenta jiz existuje
                 if data[0] in self.students:
                     raise Exception(f"Line {line_num}: Zak s ID={data[0]} jiz existuje!")
@@ -484,7 +489,10 @@ class SubSort:
         
         with codecs.open(path, encoding='utf-8') as f:
             for line in f:
-                self.add_subject(line.rstrip(EOF))
+                data = re.split(INPUT_FILE_DELIM, line.rstrip(EOF))
+                if len(data) != 1:
+                    continue
+                self.add_subject(data[0])
         self.request_update()
         self.__recalculate_students_per_subjects()
         return True
@@ -584,6 +592,8 @@ class SubSort:
         """
 
         for id in self.students:
+
+            self.__update_combinations()
             
             # preskakuje jiz roztrizene studenty
             if self.students[id].sorted:
@@ -596,12 +606,12 @@ class SubSort:
             if len(self.students[id].subjects) == len(self.days):
                 # vyhledavani v predem setrizenem seznamu
                 if key in self.__hashmap_combination:
-                    self.students[id].pass_subj = self.__hashmap_combination[key]
+                    self.students[id].pass_subj = copy.deepcopy(self.__hashmap_combination[key])
             # student ma mene predmetu nez je dnu
             else:
                 if key not in self.__hashmap_combination:
                     self.__hashmap_custom_combination[key] = self.__get_custom_combination(self.students[id].subjects)
-                self.students[id].pass_subj = self.__hashmap_custom_combination[key]
+                self.students[id].pass_subj = copy.deepcopy(self.__hashmap_custom_combination[key])
 
             # student ma jedinou moznost
             if len(self.students[id].pass_subj) == 1:
