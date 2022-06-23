@@ -147,7 +147,7 @@ class SubSort:
         self.__day_up_to_dated = False
         # vynulovani dat
         list(map(lambda x: self.students[x].clear_data(), self.students.keys()))
-        list(map(lambda x: x.clear_subs, self.days))
+        list(map(lambda x: x.clear_subs(), self.days))
         self.nof_sorted_students = 0
         # vynulovani hashmapy s kombinacemi a nasledne znovu nacteni
         self.__hashmap_combination.clear()
@@ -590,12 +590,15 @@ class SubSort:
             Doporucuju si napsat nejake pomocne funkce
                 -> pokud budou v teto tride -> nazev zacina dvema podtrzitky; pr.: __moje_funkce(self)
         """
-
+        # list(map(lambda x: x.clear_subs(), self.days))
+        # list(map(lambda x: self.students[x].sorted = False, self.student))
+        
         for id in self.students:
+            self.students[id].sorted = False 
 
             # preskakuje jiz roztrizene studenty
-            if self.students[id].sorted:
-                continue
+            # if self.students[id].sorted:
+            #     continue
             
             # student ma vybrano vice predmetu
             if len(self.students[id].subjects) > len(self.days):
